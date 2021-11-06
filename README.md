@@ -12,6 +12,8 @@ Alternatively, `docker build --tag matrix-webhook-receiver:latest .` and `docker
 
 Use a reverse proxy to enable https and/or http basic auth. This is especially relevant for the `/set` and `/delete` endpoints, since otherwise the public can use your receiver.
 
+Set the environment variable `URI_PREFIX` if you are not serving the app at `/`, e.g. in the following case `URI_PREFIX="/webhooks`.
+
 ## Usage
 
 ### Setup
@@ -19,7 +21,7 @@ Use a reverse proxy to enable https and/or http basic auth. This is especially r
 To use this app, first create a profile. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
 
 1. get a webhook URI using [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) (`!webhook`)
-2. make a POST request like the following: `curl -X PUT --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
+2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
 3. note the returned `whid`, you need it to POST messages later
 
 `your-webhook-token` is the alphanumeric ID after the last `/` in your webhook URL. The value for `url` is the rest of that URL, ending in `/`.
@@ -42,5 +44,5 @@ To delete a profile, send a DELETE request like this: `curl -X DELETE https://ex
 
 ### Post
 
-1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl -v --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.com/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
-2. supply optional fields to diverge from your default profile settings: `curl -v --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.com/webhooks/whid`
+1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.com/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
+2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.com/webhooks/whid`

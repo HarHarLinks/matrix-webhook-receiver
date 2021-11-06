@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import FastAPI, Response
 from pydantic import BaseModel
 import hashlib
+import os
 
 
 engine = create_engine('sqlite:///data/db.sqlite3')
@@ -46,7 +47,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-app = FastAPI()
+app = FastAPI(openapi_url=os.path.join(os.environ.get('URI_PREFIX', '/'),'openapi.json'), docs_url=os.path.join(os.environ.get('URI_PREFIX', '/'),'docs'), redoc_url=None)
 
 @app.post("/set", status_code=201)
 def add(new_hook: CreateWebhook):
