@@ -6,10 +6,11 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import sessionmaker
 import requests
 from typing import Optional
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Body
 from pydantic import BaseModel
 import hashlib
 import os
+import json
 
 
 engine = create_engine('sqlite:///data/db.sqlite3')
@@ -84,23 +85,24 @@ def delete(whid: str):
     return Response(status_code=204)
 
 @app.post("/{whid}")
-def receive(whid: str, post: Post):
+def receive(whid: str, post: dict = Body(...)):
+    payload = json.dumps(post)
     # get data frame from db
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
     if webhook is None:
         return Response(status_code=404)
 
     data = {
-        "text": post.payload,
-        "format": webhook.defaultFormat if post.format is None else post.format,
+        "text": payload,
+        "format": webhook.defaultFormat if post.get('format') is None else post.get('format'),
         "displayName": webhook.displayName,
         "avatar_url": webhook.avatar,
-        "emoji": webhook.defaultEmoji if post.emoji is None else post.emoji
+        "emoji": webhook.defaultEmoji if post.get('emoji') is None else post.get('emoji')
     }
     if webhook.defaultMsgtype != 'plain':
         data['msgtype'] = webhook.defaultMsgtype
-    if post.msgtype is not None:
-        data['msgtype'] = post.msgtype
+    if post.get('msgtype') is not None:
+        data['msgtype'] = post.get('msgtype')
 
     response = requests.post(webhook.url + webhook.token, json=data)
     return response.json()
