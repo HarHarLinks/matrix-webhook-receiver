@@ -14,7 +14,7 @@ import json
 from jinja2 import Template, Environment
 
 
-engine = create_engine('sqlite:///data/db.sqlite3')
+engine = create_engine('sqlite:///data/db.sqlite3', connect_args={"check_same_thread": False})
 Base = declarative_base()
 
 class Webhook(Base):
