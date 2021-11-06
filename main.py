@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import hashlib
 import os
 import json
-from jinja2 import Template, Environment
+from jinja2 import Environment
 
 
 engine = create_engine('sqlite:///data/db.sqlite3', connect_args={"check_same_thread": False})
@@ -113,7 +113,8 @@ def receive(whid: str, post: dict = Body(...)):
     if webhook.template is None:
         payload = json.dumps(post)
     else:
-        template = Template(webhook.template)
+        env = Environment(undefined=DebugUndefined)
+        template = env.from_string(webhook.template)
         payload = template.render(post)
 
     data = {
