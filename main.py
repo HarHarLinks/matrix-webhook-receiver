@@ -11,6 +11,7 @@ from pydantic import BaseModel
 import hashlib
 import os
 import json
+from jinja2 import Template, Environment
 
 
 engine = create_engine('sqlite:///data/db.sqlite3')
@@ -24,6 +25,7 @@ class Webhook(Base):
     url = Column(String)
     displayName = Column(String)
     avatar = Column(String)
+    template = Column(String)
     defaultFormat = Column(String)
     defaultEmoji = Column(Boolean)
     defaultMsgtype = Column(String)
@@ -34,6 +36,7 @@ class CreateWebhook(BaseModel):
     url: str
     displayName: str
     avatar: str
+    template: Optional[str] = ''
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
     defaultMsgtype: Optional[str] = 'text' # or notice or emote
@@ -51,7 +54,17 @@ session = Session()
 app = FastAPI(openapi_url=os.path.join(os.environ.get('URI_PREFIX', '/'),'openapi.json'), docs_url=os.path.join(os.environ.get('URI_PREFIX', '/'),'docs'), redoc_url=None)
 
 @app.post("/set", status_code=201)
-def add(new_hook: CreateWebhook):
+def add(new_hook: CreateWebhook, response: Response):
+    # verify template is valid jinja2
+    if new_hook.template is not None:
+        env = Environment()
+        try:
+            env.parse(new_hook.template)
+        except SyntaxError:
+            response.status_code = 400
+            return "invalid Jinja2 syntax"
+
+    # create new token/primary key if not passed
     whid = new_hook.whid
     if whid is None:
         whid = hashlib.sha256()
@@ -60,15 +73,17 @@ def add(new_hook: CreateWebhook):
         whid.update(new_hook.displayName.encode('utf-8'))
         whid = whid.hexdigest()
 
+    # if the token exists update the db, else insert
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
 
     if webhook is None:
-        session.add(Webhook(whid=whid, token=new_hook.token, url=new_hook.url, displayName=new_hook.displayName, avatar=new_hook.avatar, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
+        session.add(Webhook(whid=whid, token=new_hook.token, url=new_hook.url, displayName=new_hook.displayName, avatar=new_hook.avatar, template=new_hook.template, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
     else:
         webhook.token = new_hook.token
         webhook.url = new_hook.url
         webhook.displayName = new_hook.displayName
         webhook.avatar = new_hook.avatar
+        webhook.template = new_hook.template
         webhook.defaultFormat = new_hook.defaultFormat
         webhook.defaultEmoji = new_hook.defaultEmoji
         webhook.defaultMsgtype = new_hook.defaultMsgtype
@@ -86,11 +101,16 @@ def delete(whid: str):
 
 @app.post("/{whid}")
 def receive(whid: str, post: dict = Body(...)):
-    payload = json.dumps(post)
     # get data frame from db
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
     if webhook is None:
         return Response(status_code=404)
+
+    if webhook.template is None:
+        payload = json.dumps(post)
+    else:
+        template = Template(webhook.template)
+        payload = template.render(post)
 
     data = {
         "text": payload,
