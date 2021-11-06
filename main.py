@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import hashlib
 import os
 import json
-from jinja2 import Environment
+from jinja2 import Environment, DebugUndefined
 
 
 engine = create_engine('sqlite:///data/db.sqlite3', connect_args={"check_same_thread": False})
