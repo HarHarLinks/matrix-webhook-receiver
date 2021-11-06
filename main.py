@@ -53,12 +53,11 @@ app = FastAPI(
         "name": "HarHarLinks",
         "url": "https://github.com/HarHarLinks/matrix-webhook-receiver"
     },
-    openapi_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'openapi.json'),
-    docs_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'docs'),
-    redoc_url=None
+    redoc_url=None,
+    root_path=os.environ.get('URL_PREFIX', '/')
 )
 
-@app.post("/set", status_code=201)
+@app.post('/set', status_code=201)
 def add(new_hook: CreateWebhook, response: Response):
     # verify template is valid jinja2
     if new_hook.template is not None:
@@ -96,7 +95,7 @@ def add(new_hook: CreateWebhook, response: Response):
     session.commit()
     return {"whid": whid}
 
-@app.delete("/delete/{whid}", status_code=204)
+@app.delete('/delete/{whid}', status_code=204)
 def delete(whid: str):
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
     if webhook is not None:
@@ -104,7 +103,7 @@ def delete(whid: str):
         session.commit()
     return Response(status_code=204)
 
-@app.post("/{whid}")
+@app.post('/{whid}')
 def receive(whid: str, post: dict = Body(...)):
     # get data frame from db
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
