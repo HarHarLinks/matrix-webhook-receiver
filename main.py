@@ -8,6 +8,7 @@ import requests
 from typing import Optional
 from fastapi import FastAPI, Response
 from pydantic import BaseModel
+import hashlib
 
 
 engine = create_engine('sqlite:///data/db.sqlite3')
@@ -16,22 +17,24 @@ Base = declarative_base()
 class Webhook(Base):
     __tablename__ = 'webhooks'
 
-    token = Column(String, primary_key=True)
+    whid = Column(String, primary_key=True)
+    token = Column(String)
     url = Column(String)
     displayName = Column(String)
     avatar = Column(String)
     defaultFormat = Column(String)
-    emoji = Column(Boolean)
-    msgtype = Column(String)
+    defaultEmoji = Column(Boolean)
+    defaultMsgtype = Column(String)
 
 class CreateWebhook(BaseModel):
+    whid: Optional[str] = None
     token: str
     url: str
     displayName: str
     avatar: str
     defaultFormat: Optional[str] = 'plain' # or html
-    emoji: Optional[bool] = True
-    msgtype: Optional[str] = 'text' # or notice or emote
+    defaultEmoji: Optional[bool] = True
+    defaultMsgtype: Optional[str] = 'text' # or notice or emote
 
 class Post(BaseModel):
     payload: str
@@ -45,35 +48,58 @@ session = Session()
 
 app = FastAPI()
 
-@app.put("/new", status_code=201)
+@app.post("/set", status_code=201)
 def add(new_hook: CreateWebhook):
-    webhook = session.query(Webhook).filter_by(token=new_hook.token).one_or_none()
+    whid = new_hook.whid
+    if whid is None:
+        whid = hashlib.sha256()
+        whid.update(new_hook.token.encode('utf-8'))
+        whid.update(new_hook.url.encode('utf-8'))
+        whid.update(new_hook.displayName.encode('utf-8'))
+        whid = whid.hexdigest()
+
+    webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
+
     if webhook is None:
-        session.add(Webhook(token=new_hook.token, url=new_hook.url, displayName=new_hook.displayName, avatar=new_hook.avatar, defaultFormat=new_hook.defaultFormat, emoji=new_hook.emoji, msgtype=new_hook.msgtype))
+        session.add(Webhook(whid=whid, token=new_hook.token, url=new_hook.url, displayName=new_hook.displayName, avatar=new_hook.avatar, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
     else:
+        webhook.token = new_hook.token
         webhook.url = new_hook.url
         webhook.displayName = new_hook.displayName
         webhook.avatar = new_hook.avatar
         webhook.defaultFormat = new_hook.defaultFormat
-        webhook.emoji = new_hook.emoji
-        webhook.msgtype = new_hook.msgtype
-    session.commit()
-    return Response(status_code=201)
+        webhook.defaultEmoji = new_hook.defaultEmoji
+        webhook.defaultMsgtype = new_hook.defaultMsgtype
 
-@app.post("/{token}")
-def receive(token: str, post: Post):
+    session.commit()
+    return {"whid": whid}
+
+@app.delete("/delete/{whid}", status_code=204)
+def delete(whid: str):
+    webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
+    if webhook is not None:
+        session.delete(webhook)
+        session.commit()
+    return Response(status_code=204)
+
+@app.post("/{whid}")
+def receive(whid: str, post: Post):
     # get data frame from db
-    webhook = session.query(Webhook).filter_by(token=token).one_or_none()
+    webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
     if webhook is None:
         return Response(status_code=404)
+
     data = {
         "text": post.payload,
         "format": webhook.defaultFormat if post.format is None else post.format,
         "displayName": webhook.displayName,
         "avatar_url": webhook.avatar,
-        "emoji": webhook.emoji if post.emoji is None else post.emoji
+        "emoji": webhook.defaultEmoji if post.emoji is None else post.emoji
     }
-    if webhook.msgtype != 'plain':
-        data['msgtype'] = webhook.msgtype if post.msgtype is None else post.msgtype
+    if webhook.defaultMsgtype != 'plain':
+        data['msgtype'] = webhook.defaultMsgtype
+    if post.msgtype is not None:
+        data['msgtype'] = post.msgtype
+
     response = requests.post(webhook.url + webhook.token, json=data)
     return response.json()
