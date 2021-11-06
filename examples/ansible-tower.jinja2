@@ -1,0 +1,8 @@
+<strong>{{ name }}</strong> (<a href="{{ url }}">Job #{{ id }}</a>) of project <strong>{{ project }}</strong><br>
+on inventory <strong>{{ inventory }}</strong> with credential {{ credential }}<br>
+started {{ started }}  finished {{ finished }} status <strong>{{ status }}</strong><br>
+<ul>
+{% for name,properties in hosts.items() %}
+<li>{{ name }}: {% for p,v in properties %}{{ p }}: {{ v }},{% endfor %}</li>
+{% endfor %}
+</ul>

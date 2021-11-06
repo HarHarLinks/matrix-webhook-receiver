@@ -1,6 +1,6 @@
 # Matrix-Webhook-Receiver
 
-Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks).
+Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [matrix](https://matrix.org).
 
 The purpose of this app is to listen for generic webhook messages POSTed to a URI like https://example.com/mysecrettoken, repackage the content appropriately for matrix-appservice-webhooks, and POST it to there.
 
@@ -21,14 +21,18 @@ Set the environment variable `URI_PREFIX` if you are not serving the app at `/`,
 To use this app, first create a profile. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
 
 1. get a webhook URI using [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) (`!webhook`)
-2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
+2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","template":"{{ payload  }}","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
 3. note the returned `whid`, you need it to POST messages later
 
-`your-webhook-token` is the alphanumeric ID after the last `/` in your webhook URL. The value for `url` is the rest of that URL, ending in `/`.
+`token` is the alphanumeric ID after the last `/` in your webhook URL.
+
+`url` is the rest of the webhook URL, ending in `/`.
 
 `displayName` can be freely chosen and will appear as the account posting your message to matrix.
 
 `avatar` is supposed to set the avatar of said account, but is currently broken upstream.
+
+`template` (optional) is a [Jinja2](jinja2docs.readthedocs.io) template string. When Matrix-Webhook-Receiver receives a [post request](#post) and a template is installed in the profile, then the request body will be applied to the template and the result posted to matrix. This allows a profile to format a machine readable webhook body into a pretty human readable body. See below for [some examples](#example-templates).
 
 `defaultFormat` (optional) sets the default value for `format` (`plain` or `html`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
@@ -36,7 +40,7 @@ To use this app, first create a profile. I will assume Matrix-Webhook-Receiver i
 
 `defaultMsgtype` (optional) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
-The profile is identified by the `whid`. To update any info besides the token, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X PUT --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.com/some-image.jpg","whid":"your-whid"}' https://example.com/webhooks/set`.
+To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X PUT --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.com/some-image.jpg","whid":"your-whid"}' https://example.com/webhooks/set`.
 
 #### Deleting profiles
 
@@ -46,3 +50,12 @@ To delete a profile, send a DELETE request like this: `curl -X DELETE https://ex
 
 1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.com/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
 2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.com/webhooks/whid`
+
+### Example Templates
+
+Look at the Jinja2 templates for an impression of how the final message may look like in matrix.
+The same template is also used in the respective profile template. Fill it in and use with `curl --header 'Content-Type: application/json' --data "@template-name.json" https://example.com/webhooks/set` (add `--user name:password` or similar for your basic auth).
+
+- Ansible Tower/AWX Notifications (Webhook with default messages): [Jinja2 template](examples/ansible-tower.jinja2), [profile template](examples/ansible-tower.json)
+- Grafana Alerts (webhook): [Jinja2 template](examples/grafana.jinja2), [profile template](examples/grafana.json)
+- submit yours!
