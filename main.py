@@ -51,7 +51,18 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-app = FastAPI(openapi_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'openapi.json'), docs_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'docs'), redoc_url=None)
+app = FastAPI(
+    title="matrix-webhook-receiver",
+    description="Companion receiver to matrix-appservice-webhooks for matrix.",
+    version="1.0.0",
+    contact={
+        "name": "HarHarLinks",
+        "url": "https://github.com/HarHarLinks/matrix-webhook-receiver"
+    },
+    openapi_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'openapi.json'),
+    docs_url=os.path.join(os.environ.get('URL_PREFIX', '/'),'docs'),
+    redoc_url=None
+)
 
 @app.post("/set", status_code=201)
 def add(new_hook: CreateWebhook, response: Response):
