@@ -14,11 +14,15 @@ Use a reverse proxy to enable https and/or http basic auth. This is especially r
 
 Set the environment variable `URI_PREFIX` if you are not serving the app at `/`, e.g. in the following case `URI_PREFIX="/webhooks`.
 
+Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also hosts its own documentation at `docs`, e.g. https://example.com/webhooks/docs.
+
 ## Usage
 
 ### Setup
 
-To use this app, first create a profile. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
+To use this app, you need to create a profile first. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
+
+I will demonstrate how to interact with the app using `curl` since that makes it obvious what is going on, but you can obviously substitute that for your favorite tool or app.
 
 1. get a webhook URI using [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) (`!webhook`). Tip: since matrix-appservice-webhooks does not support encryption (yet), use an unencrypted client like [matrix.sh](https://github.com/fabianonline/matrix.sh) to create webhooks for encrypted rooms.
 2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","template":"{{ payload  }}","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
@@ -40,7 +44,7 @@ To use this app, first create a profile. I will assume Matrix-Webhook-Receiver i
 
 `defaultMsgtype` (optional) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
-To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X PUT --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.com/some-image.jpg","whid":"your-whid"}' https://example.com/webhooks/set`.
+To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.com/some-image.jpg","whid":"your-whid"}' https://example.com/webhooks/set`.
 
 #### Deleting profiles
 
