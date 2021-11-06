@@ -41,12 +41,6 @@ class CreateWebhook(BaseModel):
     defaultEmoji: Optional[bool] = True
     defaultMsgtype: Optional[str] = 'text' # or notice or emote
 
-class Post(BaseModel):
-    payload: str
-    format: Optional[str] = None
-    emoji: Optional[bool] = None
-    msgtype: Optional[str] = None
-
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
