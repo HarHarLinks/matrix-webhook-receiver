@@ -10,7 +10,7 @@ The purpose of this app is to listen for generic webhook messages POSTed to a UR
 
 Alternatively, `docker build --tag matrix-webhook-receiver:latest .` and `docker run --name matrix-webhook-receiver --mount "type=bind,src=$PWD/data,dst=/app/data" -p 8000:8000 matrix-webhook-receiver:latest`.
 
-Use a reverse proxy to enable https and/or http basic auth. This is especially relevant for the `/set` and `/delete` endpoints, since otherwise the public can use your receiver.
+Use a reverse proxy to enable https and/or http basic auth. This is especially relevant for the `/set` and `/delete` endpoints, since otherwise the public can use your receiver. There is an [nginx example](examples/example.nginx.conf) for your convenience.
 
 Set the environment variable `URL_PREFIX` if you are not serving the app at `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
 
