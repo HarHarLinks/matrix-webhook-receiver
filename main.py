@@ -36,7 +36,7 @@ class CreateWebhook(BaseModel):
     url: str
     displayName: str
     avatar: str
-    template: Optional[str] = ''
+    template: Optional[str] = None
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
     defaultMsgtype: Optional[str] = 'text' # or notice or emote
