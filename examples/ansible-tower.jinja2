@@ -1,8 +1,10 @@
 <strong>{{ name }}</strong> (<a href="{{ url }}">Job #{{ id }}</a>) of project <strong>{{ project }}</strong><br>
 on inventory <strong>{{ inventory }}</strong> with credential {{ credential }}<br>
-started {{ started }}  finished {{ finished }} status <strong>{{ status }}</strong><br>
+started {{ started }}{% if finished in not None %} - finished {{ finished }}{% endif %} status <strong>{{ status }}</strong><br>
+{% if hosts is defined %}
 <ul>
 {% for name,properties in hosts.items() %}
 <li>{{ name }}: {% for p,v in properties %}{{ p }}: {{ v }},{% endfor %}</li>
 {% endfor %}
 </ul>
+{% endif %}
