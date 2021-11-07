@@ -1,0 +1,10 @@
+{
+    "token": "your-appservice-webhooks-token",
+    "url": "https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/",
+    "displayName": "GitLab",
+    "avatar": "https://i.gyazo.com/thumb/1000/566debcae9702858a0ae487543e58123-png.png",
+    "template": "<strong><a href=\"{{ repository.homepage }}\">{{ repository.name }}</a></strong><br>received a {{ event_name }} event from {{ user_name }}<br>{% if event_name == \"push\" %}updates on {{ ref }}:<br><ul>{% for c in commits %}<li>{{ c.author.name }}: {{ c.title }}</li>{% endfor %}</ul>{% endif %}",
+    "defaultFormat": "html",
+    "defaultEmoji": false,
+    "defaultMsgtype": "notice"
+}

@@ -1,0 +1,10 @@
+<strong><a href="{{ repository.homepage }}">{{ repository.name }}</a></strong><br>
+received a {{ event_name }} event from {{ user_name }}<br>
+{% if event_name == "push" %}
+updates on {{ ref }}:<br>
+<ul>
+{% for c in commits %}
+<li>{{ c.author.name }}: {{ c.title }}</li>
+{% endfor %}
+</ul>
+{% endif %}
