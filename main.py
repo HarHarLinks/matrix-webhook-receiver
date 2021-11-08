@@ -117,6 +117,9 @@ def receive(whid: str, post: dict = Body(...)):
         template = env.from_string(webhook.template)
         payload = template.render(post)
 
+    if len(payload) == 0:
+        return Response(status_code=400)
+
     data = {
         "text": payload,
         "format": webhook.defaultFormat if post.get('format') is None else post.get('format'),
