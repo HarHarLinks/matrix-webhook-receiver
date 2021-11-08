@@ -61,5 +61,7 @@ Look at the Jinja2 templates for an impression of how the final message may look
 The same template is also used in the respective profile template. Fill it in and use with `curl --header 'Content-Type: application/json' --data "@template-name.json" https://example.com/webhooks/set` (add `--user name:password` or similar for your basic auth).
 
 - Ansible Tower/AWX Notifications (Webhook with default messages): [Jinja2 template](examples/ansible-tower.jinja2), [profile template](examples/ansible-tower.json)
+- GitLab (webhook):[Jinja2 template](examples/gitlab.jinja2), [profile template](examples/gitlab.json)
+- GitHub (webhook): [Jinja2 template](examples/github.jinja2), [profile template](examples/github.json)
 - Grafana Alerts (webhook): [Jinja2 template](examples/grafana.jinja2), [profile template](examples/grafana.json)
 - submit yours!
