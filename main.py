@@ -111,7 +111,7 @@ def receive(whid: str, post: dict = Body(...)):
         return Response(status_code=404)
 
     if webhook.template is None:
-        payload = json.dumps(post)
+        payload = f"<pre><code>{json.dumps(post, sort_keys=True, indent=4)}\n</code></pre>\n"
     else:
         env = Environment(undefined=DebugUndefined)
         template = env.from_string(webhook.template)
