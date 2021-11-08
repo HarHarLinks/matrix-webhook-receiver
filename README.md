@@ -1,4 +1,4 @@
-# Matrix Webhook Receiver ![Matrix](https://img.shields.io/matrix/matrix-webhook-receiver:sosnowkadub.de?label=matrix&server_fqdn=matrix.sosnowkadub.de&style=for-the-badge)
+# Matrix Webhook Receiver [![Matrix](https://img.shields.io/matrix/matrix-webhook-receiver:sosnowkadub.de?label=matrix&server_fqdn=matrix.sosnowkadub.de&style=for-the-badge)](https://matrix.to/#/#matrix-webhook-receiver:sosnowkadub.de)
 
 Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [\[matrix\]](https://matrix.org).
 
