@@ -1,6 +1,6 @@
 # Matrix-Webhook-Receiver
 
-Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [matrix](https://matrix.org).
+Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [[matrix](https://matrix.org)].
 
 The purpose of this app is to listen for generic webhook messages POSTed to a URL like https://example.com/mysecrettoken, repackage the content appropriately for matrix-appservice-webhooks, and POST it to there.
 
@@ -32,7 +32,7 @@ I will demonstrate how to interact with the app using `curl` since that makes it
 
 `url` is the rest of the webhook URL, ending in `/`.
 
-`displayName` can be freely chosen and will appear as the account posting your message to matrix.
+`displayName` can be freely chosen and will appear as the account posting your message to [matrix].
 
 `avatar` is supposed to set the avatar of said account, but is currently broken upstream.
 
@@ -57,7 +57,7 @@ To delete a profile, send a DELETE request like this: `curl -X DELETE https://ex
 
 ### Example Templates
 
-Look at the Jinja2 templates for an impression of how the final message may look like in matrix.
+Look at the Jinja2 templates for an impression of how the final message may look like in [matrix].
 The same template is also used in the respective profile template. Fill it in and use with `curl --header 'Content-Type: application/json' --data "@template-name.json" https://example.com/webhooks/set` (add `--user name:password` or similar for your basic auth).
 
 - Ansible Tower/AWX Notifications (Webhook with default messages): [Jinja2 template](examples/ansible-tower.jinja2), [profile template](examples/ansible-tower.json)
