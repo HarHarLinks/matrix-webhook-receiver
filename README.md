@@ -1,6 +1,6 @@
 # Matrix-Webhook-Receiver
 
-Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [[matrix](https://matrix.org)].
+Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [\[matrix\]](https://matrix.org).
 
 The purpose of this app is to listen for generic webhook messages POSTed to a URL like https://example.com/mysecrettoken, repackage the content appropriately for matrix-appservice-webhooks, and POST it to there.
 
