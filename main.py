@@ -54,7 +54,7 @@ app = FastAPI(
         "url": "https://github.com/HarHarLinks/matrix-webhook-receiver"
     },
     redoc_url=None,
-    root_path=os.environ.get('URL_PREFIX', '/')
+    root_path=os.environ.get('URL_PREFIX', '')
 )
 
 jinja2_extensions=['jinja2.ext.loopcontrols']
