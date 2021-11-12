@@ -57,11 +57,13 @@ app = FastAPI(
     root_path=os.environ.get('URL_PREFIX', '/')
 )
 
+jinja2_extensions=['jinja2.ext.loopcontrols']
+
 @app.post('/set', status_code=201)
 def add(new_hook: CreateWebhook, response: Response):
     # verify template is valid jinja2
     if new_hook.template is not None:
-        env = Environment()
+        env = Environment(extensions=jinja2_extensions)
         try:
             env.parse(new_hook.template)
         except SyntaxError:
@@ -113,7 +115,7 @@ def receive(whid: str, post: dict = Body(...)):
     if webhook.template is None:
         payload = f"<pre><code>{json.dumps(post, sort_keys=True, indent=4)}\n</code></pre>\n"
     else:
-        env = Environment(undefined=DebugUndefined)
+        env = Environment(undefined=DebugUndefined, extensions=jinja2_extensions)
         template = env.from_string(webhook.template)
         payload = template.render(post)
 
