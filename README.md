@@ -10,6 +10,8 @@ The bridge can receive messages in a certain format, which is nice if the notify
 This is where MWR comes in:
 It can receive any (JSON) content, optionally reformat it nicely with (customizable!), and forward it to the webhooks bridge which will post it to a room for you. If you are running any software service, chances are it can notify you via webhooks!
 
+![example screenshot](examples/github_screenshot.jpg)
+
 ## Installation
 
 1. `git clone` this repo
