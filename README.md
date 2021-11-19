@@ -8,7 +8,7 @@ Matrix Webhook Receiver (MWR) is an add-on for the [matrix-appservice-webhooks](
 The bridge can receive messages in a certain format, which is nice if the notifying app can be configured. Often it cannot.
 
 This is where MWR comes in:
-It can receive any (JSON) content, optionally reformat it nicely with (customizable!), and forward it to the webhooks bridge which will post it to a room for you. If you are running any software service, chances are it can notify you via webhooks!
+It can receive any (JSON) content, optionally reformat it nicely (customizable!), and forward it to the webhooks bridge which will post it to a room for you. If you are running any software service, chances are it can notify you via webhooks!
 
 ![example screenshot](examples/github_screenshot.jpg)
 
