@@ -1,8 +1,8 @@
-# Matrix Webhook Receiver [![Matrix](https://img.shields.io/matrix/matrix-webhook-receiver:sosnowkadub.de?label=matrix&server_fqdn=matrix.sosnowkadub.de&style=for-the-badge)](https://matrix.to/#/#matrix-webhook-receiver:sosnowkadub.de)
+# Matrix Webhook Receiver [![Matrix](https://img.shields.io/matrix/matrix-webhook-receiver:matrix.org?logo=matrix&label=chat&server_fqdn=matrix.org&style=for-the-badge)](https://matrix.to/#/#matrix-webhook-receiver:matrix.org)
 
 Companion "receiver" to [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) for [\[matrix\]](https://matrix.org).
 
-The purpose of this app is to listen for generic webhook messages POSTed to a URL like https://example.com/mysecrettoken, repackage the content appropriately for matrix-appservice-webhooks, and POST it to there.
+The purpose of this app is to listen for generic webhook messages POSTed to a URL like https://example.com/webhooks/mysecrettoken, repackage the content appropriately for matrix-appservice-webhooks, and POST it to there.
 
 ## Installation
 
@@ -22,7 +22,7 @@ Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also ho
 
 To use this app, you need to create a profile first. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
 
-I will demonstrate how to interact with the app using `curl` since that makes it obvious what is going on, but you can obviously substitute that for your favorite tool or app.
+I will demonstrate how to interact with the app using `curl` since that makes it obvious what is going on, but you can obviously substitute that for your favorite tool or app. One such possibility is to use the "Try It Out" feature of the docs.
 
 1. get a webhook URL using [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) (`!webhook`). Tip: since matrix-appservice-webhooks does not support encryption (yet), use an unencrypted client like [matrix.sh](https://github.com/fabianonline/matrix.sh) to create webhooks for encrypted rooms.
 2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","template":"{{ payload  }}","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
