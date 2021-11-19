@@ -12,13 +12,20 @@ It can receive any (JSON) content, optionally reformat it nicely with (customiza
 
 ## Installation
 
-`git clone` this repo, create a virtual environment, `pip install -r requirements.txt`. Run with `uvicorn main:app`.
+1. `git clone` this repo
+2. create a virtual environment
+3. `pip install -r requirements.txt`
+4. run with `uvicorn main:app`
 
-Alternatively, `docker build --tag matrix-webhook-receiver:latest .` and `docker run --name matrix-webhook-receiver --mount "type=bind,src=$PWD/data,dst=/app/data" -p 8000:8000 matrix-webhook-receiver:latest`.
+Alternatively with docker:
+```shell
+docker build --tag matrix-webhook-receiver:latest .
+docker run --name matrix-webhook-receiver --mount "type=bind,src=$PWD/data,dst=/app/data" -p 8000:8000 matrix-webhook-receiver:latest
+```
 
 Use a reverse proxy to enable https and/or http basic auth. This is especially relevant for the `/set` and `/delete` endpoints, since otherwise the public can use your receiver. There is an [nginx example](examples/example.nginx.conf) for your convenience.
 
-Set the environment variable `URL_PREFIX` if you are not serving the app at `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
+Set the environment variable `URL_PREFIX` if your reverse proxy is not serving the app at `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
 
 Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also hosts its own documentation at `docs`, e.g. https://example.com/webhooks/docs.
 
