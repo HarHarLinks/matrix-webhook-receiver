@@ -6,7 +6,8 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import sessionmaker
 import requests
 from typing import Optional
-from fastapi import FastAPI, Response, Body
+from fastapi import FastAPI, Response, Body, Request, Header
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, HttpUrl
 import hashlib
 import os
@@ -96,6 +97,21 @@ def add(new_hook: CreateWebhook, response: Response):
 
     session.commit()
     return {"whid": whid}
+
+@app.get('/profiles')
+def get_profiles(accept: Optional[str] = Header(None)):
+    print(accept)
+    if accept is not None and 'application/json' in accept:
+        webhooks = session.query(Webhook)
+        return list(webhooks)
+    else:
+        with open('profiles.html', 'r') as htmlpage:
+            return HTMLResponse(content=htmlpage.read())
+
+@app.get('/profile/{whid}')
+def get_profiles(whid: str):
+    webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
+    return webhook
 
 @app.delete('/delete/{whid}', status_code=204)
 def delete(whid: str):

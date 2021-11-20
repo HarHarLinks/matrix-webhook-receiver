@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        function getProfiles() {
+            $.ajax({
+                type: 'GET',
+                url: 'profiles',
+                dataType: 'json',
+                success: function (result){loadProfiles(result)}
+            })
+        }
+        function loadProfiles(result) {
+            console.log(result)
+            profiles = document.getElementById('profiles')
+            for (var i=profiles.childElementCount; i > 0; i--) {
+                console.log(profiles.firstChild); profiles.removeChild(profiles.firstElementChild)
+            }
+            for (var i=0; i < result.length; i++) {
+                var newopt = document.createElement('option')
+                newopt.value = result[i].whid
+                newopt.innerHTML = result[i].displayName
+                profiles.appendChild(newopt)
+            }
+        }
+        function reloadProfiles() {
+            clearProfile()
+            getProfiles()
+        }
+        function loadProfile(result) {
+            console.log(result)
+            $('#whid').val(result.whid)
+            $('#url').val(result.url)
+            $('#token').val(result.token)
+            $('#displayName').val(result.displayName)
+            $('#avatar').val(result.avatar)
+            $('#avatar-preview').attr('src', result.avatar)
+            $('#defaultFormat').val(result.defaultFormat)
+            $('#defaultFormat').change()
+            $('#defaultMsgtype').val(result.defaultMsgtype)
+            $('#defaultMsgtype').change()
+            $('#defaultEmoji').prop('checked', result.defaultEmoji)
+            $('#template').val(result.template)
+        }
+        function editProfile(whid) {
+            console.log(whid)
+            $.ajax({
+                type: 'GET',
+                url: 'profile/' + whid,
+                dataType: 'json',
+                success: function (result){loadProfile(result)}
+            })
+        }
+        function saveProfile() {
+            console.log($('#whid').val())
+            var p = {
+                whid: $('#whid').val(),
+                url: $('#url').val(),
+                token: $('#token').val(),
+                displayName: $('#displayName').val(),
+                avatar: $('#avatar').val(),
+                defaultFormat: $('#defaultFormat').val(),
+                defaultMsgtype: $('#defaultMsgtype').val(),
+                defaultEmoji: $('#defaultEmoji').prop('checked'),
+                template: $('#template').val()
+            }
+            console.log(p)
+            $.ajax({
+                type: 'POST',
+                url: 'set',
+                dataType: 'json',
+                data: JSON.stringify(p),
+                contentType: 'application/json; charset=utf-8',
+                success: function (result){getProfiles()},
+                error: function (jqXhr, status, error){
+                    console.log(jqXhr)
+                    console.log(status)
+                    console.log(error)
+                    alert(error)
+                }
+            })
+        }
+        function deleteProfile(whid) {
+            console.log(whid)
+            var c = confirm('Do you really want to delete "' + whid + '"?')
+            if (c == true) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'delete/' + whid,
+                    dataType: 'json',
+                    success: function (result){reloadProfiles()}
+                })
+            }
+        }
+        function clearProfile() {
+            $('#whid').val('')
+            $('#url').val('')
+            $('#token').val('')
+            $('#displayName').val('')
+            $('#avatar').val('')
+            $('#avatar-preview').attr('src', '')
+            $('#defaultFormat').val('plain')
+            $('#defaultFormat').change()
+            $('#defaultMsgtype').val('text')
+            $('#defaultMsgtype').change()
+            $('#defaultEmoji').prop('checked', true)
+            $('#template').val('')
+        }
+        $(document).ready(function(){
+            getProfiles()
+        })
+    </script>
+    <style type="text/css">
+    </style>
+    <title>Webhook Profiles</title>
+</head>
+
+<body>
+    <h1>Matrix Webhook Receiver</h1>
+    <a href="https://github.com/HarHarLinks/matrix-webhook-receiver">Documentation and source</a>
+    <h2>Current Profiles</h2>
+    <form>
+        <select id="profiles" name="profiles" size="10">
+        </select>
+        <br>
+        <input id="edit" type="button" value="edit" onclick="editProfile($('#profiles').val())">
+        <input id="delete" type="button" value="delete" onclick="deleteProfile($('#profiles').val())">
+        <input id="new" type="reset" value="new" onclick="clearProfile()">
+        <input id="reload" type="button" value="reload" onclick="reloadProfiles()">
+    </form>
+    <br>
+    <h2>Edit Profile</h2>
+    <form>
+        <table>
+            <tr>
+                <td><label for="whid">whid</label>:</td>
+                <td><input id="whid" name="whid" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="url">url</label>:</td>
+                <td><input id="url" name="url" type="url"></td>
+            </tr>
+            <tr>
+                <td><label for="token">token</label>:</td>
+                <td><input id="token" name="token" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="displayName">displayname</label>:</td>
+                <td><input id="displayName" name="displayName" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="avatar">avatar</label>:</td>
+                <td><img id="avatar-preview" src="" /><br><input id="avatar" name="avatar" type="text"> <input id="update-preview" type="button" value="preview" onclick="$('#avatar-preview').attr('src', $('#avatar').val())"></td>
+            </tr>
+            <tr>
+                <td><label for="defaultFormat">defaultFormat</label>:</td>
+                <td>
+                    <select id="defaultFormat" name="defaultFormat">
+                        <option value="plain" selected>Plain Text</option>
+                        <option value="html">HTML</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="defaultMsgtype">defaultMsgtype</label>:</td>
+                <td>
+                    <select id="defaultMsgtype" name="defaultMsgtype">
+                        <option value="text" selected>Normal</option>
+                        <option value="notice">Notice</option>
+                        <option value="emote">Emote</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="defaultEmoji">defaultEmoji</label>:</td>
+                <td><input id="defaultEmoji" name="defaultEmoji" type="checkbox" value="defaultEmoji" checked></td>
+            </tr>
+            <tr>
+                <td><label for="template">template</label>:</td>
+                <td><textarea id="template" name="template" rows="10" cols="30"></textarea></td>
+            </tr>
+        </table>
+        <input id="save" type="button" value="save" onclick="saveProfile()">
+        <input id="discard" type="reset" value="discard" onclick="clearProfile()">
+    </form>
+</body>
+</html>
