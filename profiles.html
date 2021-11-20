@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.3/dist/purify.min.js"></script>
     <script type="text/javascript">
         function getProfiles() {
             $.ajax({
@@ -65,7 +66,7 @@
                 defaultFormat: $('#defaultFormat').val(),
                 defaultMsgtype: $('#defaultMsgtype').val(),
                 defaultEmoji: $('#defaultEmoji').prop('checked'),
-                template: $('#template').val()
+                template: DOMPurify.sanitize($('#template').val(), {USE_PROFILES: {html: true}})
             }
             console.log(p)
             $.ajax({
