@@ -29,18 +29,18 @@ Use a reverse proxy to enable https and/or http basic auth. This is especially r
 
 Set the environment variable `URL_PREFIX` if your reverse proxy is not serving the app at `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
 
-Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also hosts its own documentation at `docs`, e.g. https://example.com/webhooks/docs.
+Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also hosts its own documentation at `docs`, e.g. https://example.org/webhooks/docs.
 
 ## Usage
 
 ### Setup
 
-To use this app, you need to create a profile first. I will assume Matrix-Webhook-Receiver is reachable at https://example.com/webhooks/.
+To use this app, you need to create a profile first. I will assume Matrix-Webhook-Receiver is reachable at https://example.org/webhooks/.
 
 I will demonstrate how to interact with the app using `curl` since that makes it obvious what is going on, but you can obviously substitute that for your favorite tool or app. One such possibility is to use the "Try It Out" feature of the docs.
 
 1. get a webhook URL using [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) (`!webhook`). Tip: since matrix-appservice-webhooks does not support encryption (yet), use an unencrypted client like [matrix.sh](https://github.com/fabianonline/matrix.sh) to create webhooks for encrypted rooms.
-2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.com/some-image.jpg","template":"{{ payload  }}","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.com/webhooks/set`
+2. make a POST request like the following: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/","displayName":"Choose Wisely","avatar":"http://example.org/some-image.jpg","template":"{{ payload  }}","defaultFormat":"plain","defaultEmoji":true,"defaultMsgtype":"text"}' https://example.org/webhooks/set`
 3. note the returned `whid`, you need it to POST messages later
 
 `token` is the alphanumeric ID after the last `/` in your webhook URL.
@@ -59,21 +59,21 @@ I will demonstrate how to interact with the app using `curl` since that makes it
 
 `defaultMsgtype` (optional) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
-To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.com/some-image.jpg","whid":"your-whid"}' https://example.com/webhooks/set`.
+To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.org/some-image.jpg","whid":"your-whid"}' https://example.org/webhooks/set`.
 
 #### Deleting profiles
 
-To delete a profile, send a DELETE request like this: `curl -X DELETE https://example.com/webhooks/delete/your-whid`.
+To delete a profile, send a DELETE request like this: `curl -X DELETE https://example.org/webhooks/delete/your-whid`.
 
 ### Post
 
-1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.com/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
-2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.com/webhooks/whid`
+1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.org/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
+2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.org/webhooks/whid`
 
 ### Example Templates
 
 Look at the Jinja2 templates for an impression of how the final message may look like in [matrix].
-The same template is also used in the respective profile template. Fill it in and use with `curl --header 'Content-Type: application/json' --data "@template-name.json" https://example.com/webhooks/set` (add `--user name:password` or similar for your basic auth).
+The same template is also used in the respective profile template. Fill it in and use with `curl --header 'Content-Type: application/json' --data "@template-name.json" https://example.org/webhooks/set` (add `--user name:password` or similar for your basic auth).
 
 - Ansible Tower/AWX Notifications (Webhook with default messages): [Jinja2 template](examples/ansible-tower.jinja2), [profile template](examples/ansible-tower.json)
 - GitLab (webhook):[Jinja2 template](examples/gitlab.jinja2), [profile template](examples/gitlab.json)
