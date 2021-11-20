@@ -36,7 +36,7 @@ class CreateWebhook(BaseModel):
     token: str
     url: HttpUrl
     displayName: str
-    avatar: str
+    avatar: HttpUrl
     template: Optional[str] = None
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
@@ -84,12 +84,20 @@ def add(new_hook: CreateWebhook, response: Response):
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
 
     if webhook is None:
-        session.add(Webhook(whid=whid, token=new_hook.token, url=str(new_hook.url), displayName=new_hook.displayName, avatar=new_hook.avatar, template=new_hook.template, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
+        session.add(Webhook(whid=whid,
+                            token=new_hook.token,
+                            url=str(new_hook.url),
+                            displayName=new_hook.displayName,
+                            avatar=str(new_hook.avatar),
+                            template=new_hook.template,
+                            defaultFormat=new_hook.defaultFormat,
+                            defaultEmoji=new_hook.defaultEmoji,
+                            defaultMsgtype=new_hook.defaultMsgtype))
     else:
         webhook.token = new_hook.token
         webhook.url = str(new_hook.url)
         webhook.displayName = new_hook.displayName
-        webhook.avatar = new_hook.avatar
+        webhook.avatar = str(new_hook.avatar)
         webhook.template = new_hook.template
         webhook.defaultFormat = new_hook.defaultFormat
         webhook.defaultEmoji = new_hook.defaultEmoji
