@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 import requests
 from typing import Optional
 from fastapi import FastAPI, Response, Body
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 import hashlib
 import os
 import json
@@ -33,7 +33,7 @@ class Webhook(Base):
 class CreateWebhook(BaseModel):
     whid: Optional[str] = None
     token: str
-    url: str
+    url: HttpUrl
     displayName: str
     avatar: str
     template: Optional[str] = None
@@ -83,10 +83,10 @@ def add(new_hook: CreateWebhook, response: Response):
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
 
     if webhook is None:
-        session.add(Webhook(whid=whid, token=new_hook.token, url=new_hook.url, displayName=new_hook.displayName, avatar=new_hook.avatar, template=new_hook.template, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
+        session.add(Webhook(whid=whid, token=new_hook.token, url=str(new_hook.url), displayName=new_hook.displayName, avatar=new_hook.avatar, template=new_hook.template, defaultFormat=new_hook.defaultFormat, defaultEmoji=new_hook.defaultEmoji, defaultMsgtype=new_hook.defaultMsgtype))
     else:
         webhook.token = new_hook.token
-        webhook.url = new_hook.url
+        webhook.url = str(new_hook.url)
         webhook.displayName = new_hook.displayName
         webhook.avatar = new_hook.avatar
         webhook.template = new_hook.template
