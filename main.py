@@ -73,7 +73,7 @@ def add(new_hook: CreateWebhook, response: Response):
 
     # create new token/primary key if not passed
     whid = new_hook.whid
-    if whid is None:
+    if whid is None or whid == '':
         whid = hashlib.sha256()
         whid.update(new_hook.token.encode('utf-8'))
         whid.update(new_hook.url.encode('utf-8'))
