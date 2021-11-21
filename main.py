@@ -10,6 +10,7 @@ from fastapi import FastAPI, Response, Body, Request, Header
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, HttpUrl
 import hashlib
+import uuid
 import os
 import json
 from jinja2 import Environment, DebugUndefined
@@ -75,9 +76,7 @@ def add(new_hook: CreateWebhook, response: Response):
     whid = new_hook.whid
     if whid is None or whid == '':
         whid = hashlib.sha256()
-        whid.update(new_hook.token.encode('utf-8'))
-        whid.update(new_hook.url.encode('utf-8'))
-        whid.update(new_hook.displayName.encode('utf-8'))
+        whid.update(str(uuid.uuid4()).encode('utf-8'))
         whid = whid.hexdigest()
 
     # if the token exists update the db, else insert

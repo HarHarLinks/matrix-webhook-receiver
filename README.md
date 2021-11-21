@@ -59,7 +59,9 @@ I will demonstrate how to interact with the app using `curl` since that makes it
 
 `defaultMsgtype` (optional) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
-To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.org/some-image.jpg","whid":"your-whid"}' https://example.org/webhooks/set`.
+To update any info, repeat step 2 but add `"whid":"your-whid"` to the request body: `curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-webhook-token","url":"https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/","displayName":"New Name","avatar":"http://example.org/some-image.jpg","whid":"your-whid"}' https://example.org/webhooks/set`. If you don't add the `whid`, a new profile with a new `whid` will be created instead.
+
+The `whid` is the unique identifier for its profile. To "edit" the `whid`, create a new profile with the new `whid` and delete the old one.
 
 #### Deleting profiles
 
