@@ -67,8 +67,8 @@ To delete a profile, send a DELETE request like this: `curl -X DELETE https://ex
 
 ### Post
 
-1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https:///example.org/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
-2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https:///example.org/webhooks/whid`
+1. make a POST like the following, which can usually be done from most apps with a webhook feature: `curl --header 'Content-Type: application/json' --data '{"payload":"hello world"}' https://example.org/webhooks/whid`. Don't forget to supply credentials if you set up authorization in your reverse proxy.
+2. supply optional fields to diverge from your default profile settings: `curl --header 'Content-Type: application/json' --data '{"payload":":beetle:", "emoji":true, "msgtype":"notice"}' https://example.org/webhooks/whid`
 
 ### Example Templates
 
