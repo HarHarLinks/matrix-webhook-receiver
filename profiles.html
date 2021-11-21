@@ -16,16 +16,18 @@
         }
         function loadProfiles(result) {
             console.log(result)
-            profiles = document.getElementById('profiles')
-            for (var i=profiles.childElementCount; i > 0; i--) {
-                console.log(profiles.firstChild); profiles.removeChild(profiles.firstElementChild)
-            }
-            for (var i=0; i < result.length; i++) {
-                var newopt = document.createElement('option')
-                newopt.value = result[i].whid
-                newopt.innerHTML = result[i].displayName
-                profiles.appendChild(newopt)
-            }
+            profiles = $('#profiles')
+            profiles.attr('size', result.length)
+            profiles.empty()
+            $.each(result, function (i, item) {
+                var domain = item.url
+                domain = domain.substr(8, domain.length)
+                domain = domain.substr(0, domain.indexOf('/'))
+                profiles.append($('<option>', {
+                    value: item.whid,
+                    text: item.displayName + ' on ' + domain + ' (token ' + item.token + ')'
+                }))
+            })
         }
         function reloadProfiles() {
             clearProfile()
@@ -33,18 +35,22 @@
         }
         function loadProfile(result) {
             console.log(result)
+            clearProfile()
             $('#whid').val(result.whid)
             $('#url').val(result.url)
             $('#token').val(result.token)
             $('#displayName').val(result.displayName)
             $('#avatar').val(result.avatar)
-            $('#avatar-preview').attr('src', result.avatar)
+            previewAvatar()
             $('#defaultFormat').val(result.defaultFormat)
             $('#defaultFormat').change()
             $('#defaultMsgtype').val(result.defaultMsgtype)
             $('#defaultMsgtype').change()
             $('#defaultEmoji').prop('checked', result.defaultEmoji)
             $('#template').val(result.template)
+            if (result.template != '') {
+                previewTemplate()
+            }
         }
         function editProfile(whid) {
             console.log(whid)
@@ -84,9 +90,19 @@
                 }
             })
         }
-        function deleteProfile(whid) {
+        function previewAvatar() {
+            $('#avatar-preview').attr('src', $('#avatar').val())
+            $('#avatar-preview').css('visibility', 'visible')
+        }
+        function previewTemplate() {
+            var dirty = $('#template').val()
+            var clean = DOMPurify.sanitize(dirty, {USE_PROFILES: {html: true}})
+            $('#template').val(clean)
+            $('#preview-area').html(clean)
+        }
+        function deleteProfile(whid, description) {
             console.log(whid)
-            var c = confirm('Do you really want to delete "' + whid + '"?')
+            var c = confirm('Do you really want to delete "' + description + '"?')
             if (c == true) {
                 $.ajax({
                     type: 'DELETE',
@@ -109,12 +125,162 @@
             $('#defaultMsgtype').change()
             $('#defaultEmoji').prop('checked', true)
             $('#template').val('')
+            $('#preview-area').html('(click "refresh HTML preview" to preview here)')
         }
         $(document).ready(function(){
+            clearProfile()
             getProfiles()
         })
     </script>
     <style type="text/css">
+        body {
+            color: #EEE;
+            background-color: #15191E;
+            margin: 8px;
+        }
+        a {
+            color: lightblue;
+        }
+        a:visited {
+            color: violet;
+        }
+        code {
+            background-color: #20252B;
+            padding: 2px 5px;
+        }
+        .red {
+            color: red;
+        }
+        select, input, textarea {
+            color: #EEE;
+            background-color: #20252B;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+/*            justify-content: space-between;*/
+        }
+        .element {
+            min-width: 49vw;
+            width: min(100%, 1000px);
+/*            max-width: 95vw;*/
+        }
+        #profile-list {
+            max-width: 100%;
+/*            width: auto;*/
+            overflow-x: auto;
+        }
+        #profiles {
+            width: 100%;
+            padding: 5px;
+        }
+        #edit-profile {
+            min-width: max(600px, 49vw);
+/*            width: min-content;*/
+        }
+        #edit-profile .form-container {
+            border: 1px solid #666;
+            display: flex;
+            flex-direction: row;
+            flex-flow: wrap;
+            justify-content: space-between;
+        }
+        .row, .column {
+            display: flex;
+        }
+        .row {
+            justify-content: space-between;
+            width: 100%
+        }
+        .column {
+            flex-direction: column;
+        }
+        .column .cell {
+            width: calc(100% - 20px);
+        }
+        .cell {
+            justify-content: space-between;
+            margin: 10px;
+        }
+        #credentials .cell.left {
+            width: 35px;
+        }
+        #credentials .cell.right {
+            width: calc(100% - 75px);
+        }
+        #nicename {
+            width: /*calc(100% - 220px)*/60%;
+        }
+        #nicename .cell.left {
+            width: 80px;
+        }
+        #nicename .cell.right {
+            width: calc(100% - 120px);
+        }
+        #defaults {
+            width: /*220px*/40%;
+        }
+        #defaults .cell.left {
+            width: 90px;
+        }
+        #defaults .cell.right {
+            width: calc(100% - 130px);
+        }
+        .cell input,.cell select {
+            width: stretch;
+            width: -webkit-fill-available;
+            width: -moz-available;
+        }
+        #avatar-container {
+            display: flex;
+            width: stretch;
+            width: -webkit-fill-available;
+            width: -moz-available;
+        }
+        #update-preview {
+            width: auto;
+            margin-left: 10px;
+        }
+        #avatar-preview {
+            max-width: calc(100% - 20px);
+            width: auto;
+            max-height: 300px;
+            visibility: hidden;
+            margin: 10px;
+            align-self: flex-end;
+        }
+        #template {
+            max-width: 100%;
+            width: calc(100% - 6px);
+            min-height: 10em;
+            height: fit-content;
+        }
+        #template-row .cell {
+            width: inherit;
+        }
+        #preview-container {
+            display: flex;
+            width: stretch;
+            width: -webkit-fill-available;
+            width: -moz-available;
+            align-items: baseline;
+        }
+        #preview {
+            margin: 5px 0;
+        }
+        #preview-area {
+            border: 1px solid #666;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        #template-row span {
+            width: auto;
+            white-space: nowrap;
+            margin: 5px 0 5px 5px;
+        }
+        .buttons {
+            margin-top: 5px;
+        }
     </style>
     <title>Webhook Profiles</title>
 </head>
@@ -122,70 +288,122 @@
 <body>
     <h1>Matrix Webhook Receiver</h1>
     <a href="https://github.com/HarHarLinks/matrix-webhook-receiver">Documentation and source</a>
-    <h2>Current Profiles</h2>
-    <form>
-        <select id="profiles" name="profiles" size="10">
-        </select>
-        <br>
-        <input id="edit" type="button" value="edit" onclick="editProfile($('#profiles').val())">
-        <input id="delete" type="button" value="delete" onclick="deleteProfile($('#profiles').val())">
-        <input id="new" type="reset" value="new" onclick="clearProfile()">
-        <input id="reload" type="button" value="reload" onclick="reloadProfiles()">
-    </form>
-    <br>
-    <h2>Edit Profile</h2>
-    <form>
-        <table>
-            <tr>
-                <td><label for="whid">whid</label>:</td>
-                <td><input id="whid" name="whid" type="text"></td>
-            </tr>
-            <tr>
-                <td><label for="url">url</label>:</td>
-                <td><input id="url" name="url" type="url"></td>
-            </tr>
-            <tr>
-                <td><label for="token">token</label>:</td>
-                <td><input id="token" name="token" type="text"></td>
-            </tr>
-            <tr>
-                <td><label for="displayName">displayname</label>:</td>
-                <td><input id="displayName" name="displayName" type="text"></td>
-            </tr>
-            <tr>
-                <td><label for="avatar">avatar</label>:</td>
-                <td><img id="avatar-preview" src="" /><br><input id="avatar" name="avatar" type="text"> <input id="update-preview" type="button" value="preview" onclick="$('#avatar-preview').attr('src', $('#avatar').val())"></td>
-            </tr>
-            <tr>
-                <td><label for="defaultFormat">defaultFormat</label>:</td>
-                <td>
-                    <select id="defaultFormat" name="defaultFormat">
-                        <option value="plain" selected>Plain Text</option>
-                        <option value="html">HTML</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="defaultMsgtype">defaultMsgtype</label>:</td>
-                <td>
-                    <select id="defaultMsgtype" name="defaultMsgtype">
-                        <option value="text" selected>Normal</option>
-                        <option value="notice">Notice</option>
-                        <option value="emote">Emote</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="defaultEmoji">defaultEmoji</label>:</td>
-                <td><input id="defaultEmoji" name="defaultEmoji" type="checkbox" value="defaultEmoji" checked></td>
-            </tr>
-            <tr>
-                <td><label for="template">template</label>:</td>
-                <td><textarea id="template" name="template" rows="10" cols="30"></textarea></td>
-            </tr>
-        </table>
-        <input id="save" type="button" value="save" onclick="saveProfile()">
-        <input id="discard" type="reset" value="discard" onclick="clearProfile()">
-    </form>
+    <div class="container">
+        <div class="element" id="profile-list">
+            <h2>Current Profiles</h2>
+            <form>
+                <select id="profiles" name="profiles">
+                </select>
+                <div class="buttons">
+                    <input id="edit" type="button" value="edit" onclick="editProfile($('#profiles').val())">
+                    <input id="delete" type="button" value="delete" onclick="deleteProfile($('#profiles').val(), $('#profiles option:selected').html())">
+                    <input id="new" type="reset" value="new" onclick="clearProfile()">
+                    <input id="reload" type="button" value="reload" onclick="reloadProfiles()">
+                </div>
+            </form>
+        </div>
+        <div class="element" id="edit-profile">
+            <h2>Edit Profile</h2>
+            <form>
+                <div class="form-container">
+                    <div class="row" id="credentials">
+                        <div class="cell left">
+                            <label for="whid">whid</label>:
+                        </div>
+                        <div class="cell right">
+                            <input id="whid" name="whid" type="text">
+                        </div>
+                    </div>
+                    <div class="row" id="credentials">
+                        <div class="cell left">
+                            <label for="url">url</label><span class="red">*</span>:
+                        </div>
+                        <div class="cell right">
+                            <input id="url" name="url" type="url">
+                        </div>
+                    </div>
+                    <div class="row" id="credentials">
+                        <div class="cell left">
+                            <label for="token">token</label><span class="red">*</span>:
+                        </div>
+                        <div class="cell right">
+                            <input id="token" name="token" type="text">
+                        </div>
+                    </div>
+                    <div class="column" id="nicename">
+                        <div class="row">
+                            <div class="cell left">
+                                <label for="displayName">displayname</label><span class="red">*</span>:
+                            </div>
+                            <div class="cell right">
+                                <input id="displayName" name="displayName" type="text">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="cell left">
+                                <label for="avatar">avatar</label>:
+                            </div>
+                            <div class="cell right">
+                                <div id="avatar-container">
+                                    <input id="avatar" name="avatar" type="text">
+                                    <input id="update-preview" type="button" value="preview" onclick="previewAvatar()">
+                                </div>
+                            </div>
+                        </div>
+                        <img id="avatar-preview" src="" />
+                    </div>
+                    <div class="column" id="defaults">
+                        <div class="row">
+                            <div class="cell left">
+                                <label for="defaultFormat">defaultFormat</label>:
+                            </div>
+                            <div class="cell right">
+                                <select id="defaultFormat" name="defaultFormat">
+                                    <option value="plain" selected>Plain Text</option>
+                                    <option value="html">HTML</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="cell left">
+                                <label for="defaultMsgtype">defaultMsgtype</label>:
+                            </div>
+                            <div class="cell right">
+                                <select id="defaultMsgtype" name="defaultMsgtype">
+                                    <option value="text" selected>Normal</option>
+                                    <option value="notice">Notice</option>
+                                    <option value="emote">Emote</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="cell left">
+                                <label for="defaultEmoji">defaultEmoji</label>:
+                            </div>
+                            <div class="cell right">
+                                <input id="defaultEmoji" name="defaultEmoji" type="checkbox" value="defaultEmoji" checked>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="template-row">
+                        <div class="cell">
+                            <label for="template">template</label>:<br>
+                            <textarea id="template" name="template"></textarea>
+                            <div id="preview-container">
+                                <input id="preview" type="button" value="refresh HTML preview" onclick="previewTemplate()">
+                                <span>The template HTML gets cleaned with <a href="https://github.com/cure53/DOMPurify">DOMPurify</a>.</span>
+                            </div>
+                            <div id="preview-area"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <input id="save" type="button" value="save" onclick="saveProfile()">
+                    <input id="discard" type="reset" value="discard" onclick="clearProfile()">
+                    <span id="legend">Fields with <span class="red">*</span> are required. <code>whid</code> gets automatically populated when left empty.</span>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
