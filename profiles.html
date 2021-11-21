@@ -85,7 +85,7 @@
                 dataType: 'json',
                 data: JSON.stringify(p),
                 contentType: 'application/json; charset=utf-8',
-                success: function (result){getProfiles()},
+                success: function (result){console.log(result); getProfiles(); editProfile(result.whid)},
                 error: function (jqXhr, status, error){
                     console.log(jqXhr)
                     console.log(status)
