@@ -63,12 +63,16 @@
         }
         function saveProfile() {
             console.log($('#whid').val())
+            var avatar = $('#avatar').val()
+            if (avatar == '') {
+                avatar = null
+            }
             var p = {
                 whid: $('#whid').val(),
                 url: $('#url').val(),
                 token: $('#token').val(),
                 displayName: $('#displayName').val(),
-                avatar: $('#avatar').val(),
+                avatar: avatar,
                 defaultFormat: $('#defaultFormat').val(),
                 defaultMsgtype: $('#defaultMsgtype').val(),
                 defaultEmoji: $('#defaultEmoji').prop('checked'),

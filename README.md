@@ -49,7 +49,7 @@ I will demonstrate how to interact with the app using `curl` since that makes it
 
 `displayName` can be freely chosen and will appear as the account posting your message to [matrix].
 
-`avatar` is supposed to set the avatar of said account, but is currently broken upstream.
+`avatar` (optional) is supposed to set the avatar of said account (HTTP(S) URL), but is currently broken upstream.
 
 `template` (optional) is a [Jinja2](jinja2docs.readthedocs.io) template string. When Matrix-Webhook-Receiver receives a [post request](#post) and a template is installed in the profile, then the request body will be applied to the template and the result posted to matrix. This allows a profile to format a machine readable webhook body into a pretty human readable body. See below for [some examples](#example-templates).
 

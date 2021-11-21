@@ -36,7 +36,7 @@ class CreateWebhook(BaseModel):
     token: str
     url: HttpUrl
     displayName: str
-    avatar: HttpUrl
+    avatar: Optional[HttpUrl] = None
     template: Optional[str] = None
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
