@@ -307,7 +307,7 @@
                 <select id="profiles" name="profiles">
                 </select>
                 <div class="buttons">
-                    <input id="edit" type="button" value="edit" onclick="editProfile($('#profiles').val())">
+                    <input id="edit" type="button" value="load" onclick="editProfile($('#profiles').val())">
                     <input id="delete" type="button" value="delete" onclick="deleteProfile($('#profiles').val(), $('#profiles option:selected').html())">
                     <input id="new" type="reset" value="new" onclick="clearProfile()">
                     <input id="reload" type="button" value="reload" onclick="reloadProfiles()">
@@ -315,7 +315,7 @@
             </form>
         </div>
         <div class="element" id="edit-profile">
-            <h2>Edit Profile</h2>
+            <h2>View &amp; Edit Profile</h2>
             <form>
                 <div class="form-container">
                     <div class="row" id="credentials">
