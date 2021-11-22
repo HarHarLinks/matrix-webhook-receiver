@@ -51,6 +51,9 @@
             if (result.template != '') {
                 previewTemplate()
             }
+            $('#webhook-info').html("Webhook URL: <code id=\"webhook-url\"></code><br>Enter this URL into your app's webhook settings as the target/payload URL. Set content type to <code>application/json</code> if needed.<br>No secret or authorization is required by default.")
+            var location = window.location.href
+            $('#webhook-url').html(location.substr(0, location.length - 'profiles'.length) + result.whid)
         }
         function editProfile(whid) {
             console.log(whid)
@@ -138,6 +141,7 @@
             $('#defaultEmoji').prop('checked', true)
             $('#template').val('')
             $('#preview-area').html('(click "refresh HTML preview" to preview here)')
+            $('#webhook-info').html('Load or save a profile to show the respective Webhook URL here.')
         }
         $(document).ready(function(){
             clearProfile()
@@ -320,6 +324,7 @@
         </div>
         <div class="element" id="edit-profile">
             <h2>View &amp; Edit Profile</h2>
+            <p id="webhook-info"></p>
             <form>
                 <div class="form-container">
                     <div class="row" id="credentials">
