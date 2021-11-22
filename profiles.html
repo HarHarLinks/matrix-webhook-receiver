@@ -67,6 +67,10 @@
             if (avatar == '') {
                 avatar = null
             }
+            var template = DOMPurify.sanitize($('#template').val(), {USE_PROFILES: {html: true}})
+            if (template == '') {
+                template = null
+            }
             var p = {
                 whid: $('#whid').val(),
                 url: $('#url').val(),
@@ -76,7 +80,7 @@
                 defaultFormat: $('#defaultFormat').val(),
                 defaultMsgtype: $('#defaultMsgtype').val(),
                 defaultEmoji: $('#defaultEmoji').prop('checked'),
-                template: DOMPurify.sanitize($('#template').val(), {USE_PROFILES: {html: true}})
+                template: template
             }
             console.log(p)
             $.ajax({

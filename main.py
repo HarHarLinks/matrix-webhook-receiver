@@ -135,8 +135,8 @@ def receive(whid: str, post: dict = Body(...)):
     if webhook is None:
         return Response(status_code=404)
 
-    if webhook.template is None:
-        payload = f"<pre><code>{json.dumps(post, sort_keys=True, indent=4)}\n</code></pre>\n"
+    if webhook.template is None or webhook.template == '':
+        payload = f"<pre><code>{json.dumps(post, sort_keys=False, indent=4)}\n</code></pre>\n"
         post['format'] = 'html'
     else:
         env = Environment(undefined=DebugUndefined, extensions=jinja2_extensions)
