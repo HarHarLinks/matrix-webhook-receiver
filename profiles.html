@@ -115,6 +115,38 @@
             $('#template').val(clean)
             $('#preview-area').html(clean)
         }
+        function testProfile(whid) {
+            console.log(whid)
+            $.ajax({
+                type: 'GET',
+                url: 'profile/' + whid,
+                dataType: 'json',
+                success: function (result){
+                    console.log(result)
+                    var p = window.prompt('Customize test payload:', '{"payload":"test message from ' + window.location.href + '"}')
+                    console.log(p)
+                    $.ajax({
+                        type: 'POST',
+                        url: whid,
+                        dataType: 'json',
+                        data: p,
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (result){
+                            console.log(result)
+                            alert('sent test message!')
+                        },
+                        error: function (result){
+                            console.log(result)
+                            alert(result)
+                        }
+                    })
+                },
+                error: function (result){
+                    console.log(result)
+                    alert(result)
+                }
+            })
+        }
         function deleteProfile(whid, description) {
             console.log(whid)
             var c = confirm('Do you really want to delete "' + description + '"?')
@@ -319,6 +351,7 @@
                     <input id="delete" type="button" value="delete" onclick="deleteProfile($('#profiles').val(), $('#profiles option:selected').html())">
                     <input id="new" type="reset" value="new" onclick="clearProfile()">
                     <input id="reload" type="button" value="reload" onclick="reloadProfiles()">
+                    <input id="test" type="button" value="send test message" onclick="testProfile($('#profiles').val())">
                 </div>
             </form>
         </div>
