@@ -48,7 +48,7 @@
             $('#defaultMsgtype').change()
             $('#defaultEmoji').prop('checked', result.defaultEmoji)
             $('#template').val(result.template)
-            if (result.template != '') {
+            if (result.template != '' && result.template != null) {
                 previewTemplate()
             }
             $('#webhook-info').html("Webhook URL: <code id=\"webhook-url\"></code><br>Enter this URL into your app's webhook settings as the target/payload URL. Set content type to <code>application/json</code> if needed.<br>No secret or authorization is required by default.")
@@ -111,6 +111,9 @@
         }
         function previewTemplate() {
             var dirty = $('#template').val()
+            if (dirty == '') {
+                return false
+            }
             var clean = DOMPurify.sanitize(dirty, {USE_PROFILES: {html: true}})
             $('#template').val(clean)
             $('#preview-area').html(clean)
