@@ -41,7 +41,7 @@ class CreateWebhook(BaseModel):
     template: Optional[str] = None
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
-    defaultMsgtype: Optional[str] = 'text' # or notice or emote
+    defaultMsgtype: Optional[str] = 'plain' # or notice or emote
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
