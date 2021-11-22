@@ -10,32 +10,40 @@ The bridge can receive messages in a certain format, which is nice if the notify
 This is where MWR comes in:
 It can receive any (JSON) content, optionally reformat it nicely (customizable!), and forward it to the webhooks bridge which will post it to a room for you. If you are running any software service, chances are it can notify you via webhooks!
 
-![example screenshot](examples/github_screenshot.jpg)
+![example screenshot](examples/github_screenshot.png)
 
 # Installation
 
-1. `git clone` this repo
-2. create a virtual environment
-3. `pip install -r requirements.txt`
-4. run with `uvicorn main:app`
+### Requirements
 
-Alternatively with docker:
-```shell
-docker build --tag matrix-webhook-receiver:latest .
-docker run --name matrix-webhook-receiver --mount "type=bind,src=$PWD/data,dst=/app/data" -p 8000:8000 matrix-webhook-receiver:latest
-```
+- a server that is reachable over the internet (or at least your sending apps and your matrix server) 24/7 with open firewall, port forwarding, a fixed IP or dynamic DNS. It does not need to be your matrix server!
 
-Use a reverse proxy to enable https and/or http basic auth. This is especially relevant for the profile management endpoints `/set`, `/delete/*`, `/profiles`, `/profile/*`, since otherwise anyone can edit your settings and send spam using your receiver. Any other endpoints should not require authentication since not all apps support it - your `whid` acts as authentication to post messages. There is an [nginx example](examples/example.nginx.conf) for your convenience.
+- use a reverse proxy like [nginx](https://nginx.com) to enable HTTP basic auth. Use HTTPS (e.g. [Let's Encrypt](https://letsencrypt.org)) to secure your credentials and data from anyone listening in. This is especially relevant for the profile management endpoints `/set`, `/delete/*`, `/profiles`, `/profile/*`, since otherwise anyone can edit your settings and send spam using your receiver. Any other endpoints should not require authentication since not all apps support it - your `whid` acts as authentication to post messages. There is an [nginx example](examples/example.nginx.conf) for your convenience.
 
 Set the environment variable `URL_PREFIX` if your reverse proxy is serving the app somewhere else than `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
 
 Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also hosts its own documentation at `docs`, e.g. https://example.org/webhooks/docs.
 
+### With Python/pip
+
+1. `git clone` this repo
+2. create a virtual environment
+3. `pip install -r requirements.txt`
+4. run with `uvicorn main:app`
+5. if your port 8000 is occupied, use `--port <number>`
+
+### With Docker
+
+```shell
+docker build --tag matrix-webhook-receiver:latest .
+docker run --name matrix-webhook-receiver --mount "type=bind,src=$PWD/data,dst=/app/data" -p 8000:8000 matrix-webhook-receiver:latest
+```
+
 # Usage
 
 ## Profile Setup
 
-To use this app, you need to create a profile first. An admin GUI is included for easy access: if your Matrix-Webhook-Receiver is reachable at https://example.org/webhooks/ then the admin GUI is at https://example.org/webhooks/profiles.
+To use this app, you need to create a profile first. An admin GUI ([screenshot](examples/GUI_screenshot.png)) is included for easy access: if your Matrix-Webhook-Receiver is reachable at https://example.org/webhooks/ then the admin GUI is at https://example.org/webhooks/profiles.
 
 Choose an existing profile from the list at the top or create a new one. Don't forget to save and test after editing.
 
