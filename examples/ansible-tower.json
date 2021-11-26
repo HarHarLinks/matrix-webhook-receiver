@@ -1,6 +1,6 @@
 {
     "token": "your-appservice-webhooks-token",
-    "url": "https://matrix.example.com/appservice-webhooks/api/v1/matrix/hook/",
+    "url": "https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/",
     "displayName": "AWX",
     "avatar": "https://avatars.githubusercontent.com/u/1507452?s=200&v=4",
     "template": "<strong>{{ name }}</strong> (<a href=\"{{ url }}\">Job #{{ id }}</a>) of project <strong>{{ project }}</strong><br>on inventory <strong>{{ inventory }}</strong> with credential {{ credential }}<br>started {{ started }}{% if finished is not None %} - finished {{ finished }}{% endif %} status <strong>{{ status }}</strong><br>{% if hosts is defined %}<ul>{% for name,properties in hosts.items() %}<li>{{ name }}: {% for p,v in properties %}{{ p }}: {{ v }},{% endfor %}</li>{% endfor %}</ul>{% endif %}",
