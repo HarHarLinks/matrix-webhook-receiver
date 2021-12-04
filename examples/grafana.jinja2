@@ -3,6 +3,6 @@
 <a href="{{ ruleUrl }}">{{ ruleName }}</a>: {{ state }}<br>
 <ul>
 {% for e in evalMatches %}
-<li>{{ e.metric }}: {{ e.value }} ({{ e.tags }})</li>
+<li>{{ e.metric }}: {{ e.value }}{% if e.tags %} ({% for key, value in e.tags.items() %}{{ key|e }}: {{ value|e }},{% endfor %}){% endif %}</li>
 {% endfor %}
 </ul>

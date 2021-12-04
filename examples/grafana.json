@@ -3,7 +3,7 @@
     "url": "https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/",
     "displayName": "Grafana",
     "avatar": "https://grafana.com/static/img/about/grafana_logo_swirl_fullcolor.jpg",
-    "template": "<strong>{{ title }}</strong><br>{{ message }}<br><a href=\"{{ ruleUrl }}\">{{ ruleName }}</a>: {{ state }}<br><ul>{% for e in evalMatches %}<li>{{ e.metric }}: {{ e.value }} ({{ e.tags }})</li>{% endfor %}</ul>",
+    "template": "<strong>{{ title }}</strong><br>{{ message }}<br><a href=\"{{ ruleUrl }}\">{{ ruleName }}</a>: {{ state }}<br><ul>{% for e in evalMatches %}<li>{{ e.metric }}: {{ e.value }}{% if e.tags %} ({% for key, value in e.tags.items() %}{{ key|e }}: {{ value|e }},{% endfor %}){% endif %}</li>{% endfor %}</ul>",
     "defaultFormat": "html",
     "defaultEmoji": false,
     "defaultMsgtype": "notice"
