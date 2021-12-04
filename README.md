@@ -70,7 +70,9 @@ To update a profile, select it from the list and load it, make your changes, and
 ### Advanced Templating
 
 The `defaultFormat`/`format` and `defaultMsgtype`/`msgtype` fields can also accept Jinja2 templates which will be evaluated using the the JSON data sent from your app when the webhook is called.
+
 This can be useful if you want to vary the values of these fields depending on the state of the app, but the app doesn't allow you to add custom fields to its JSON.
+
 For example, Grafana Alerts have the states "alerting" and "ok" among others. Imagine you want to receive a ping when an alert is going off, but only quiet notifications otherwise.
 Although Grafana doesn't allow us to customize its JSON, we can do this by setting `"defaultMsgtype":"{% if state == 'alerting' %}text{% else %}notice{% endif %}"` in our profile.
 
