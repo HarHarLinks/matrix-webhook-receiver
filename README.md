@@ -88,9 +88,14 @@ curl -X POST --header 'Content-Type: application/json' --data '{"token":"your-we
 
 ## Post
 
-Now you are ready to go! Grab your `whid` and enter it into your app's webhook settings as the target/payload URL. Set content type to application/json if needed.
+Now you are ready to go! Grab your `whid`-URL and enter it into your app's webhook settings as the target/payload URL. Set content type to `application/json` if needed.
 
 No secret or authorization is required unless your setup exceeds the settings mentioned above.
+
+You may include the following fields in the JSON to override profile settings according to the [above explanation](#profile-setup), e.g. when `defaultMsgtype` is `notice`, set `"msgtype": "text"` to send this single message as a regular text message.
+- `format`
+- `msgtype`
+- `emoji`
 
 ### Post Manually/Custom
 
