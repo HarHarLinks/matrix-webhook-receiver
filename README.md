@@ -57,15 +57,22 @@ Choose an existing profile from the list at the top or create a new one. Don't f
 
 - `avatar` (optional, default: `None`) is supposed to set the avatar of said account (HTTP(S) URL to an image), but is currently [broken upstream](https://github.com/turt2live/matrix-appservice-webhooks/issues/72).
 
-- `defaultFormat` (optional, default: `plain`) sets the default value for `format` (`plain` or `html`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
+- `defaultFormat` (optional, default: `plain`) sets the default value for `format` (`plain` or `html`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks). You may also set a Jinja2 template that generates one of these values, [see below](#advanced-templating).
 
 - `defaultEmoji` (optional, default: `True`) sets the default `emoji` conversion behaviour, see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
 
-- `defaultMsgtype` (optional, default: `plain`) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks).
+- `defaultMsgtype` (optional, default: `plain`) sets the default value `msgtype` (`plain`, `notice`, `emote`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks). You may also set a Jinja2 template that generates one of these values, [see below](#advanced-templating).
 
 - `template` (optional, default: `None`) is a [Jinja2](jinja2docs.readthedocs.io) template string. When Matrix-Webhook-Receiver receives a [post request](#post) and a template is installed in the profile, then the request body will be applied to the template and the result posted to matrix. This allows a profile to format a machine readable JSON webhook body into a pretty human readable message. Continue reading for [some examples](#example-templates).
 
 To update a profile, select it from the list and load it, make your changes, and save. It is possible to copy a profile by loading it and deleting the `whid`.
+
+### Advanced Templating
+
+The `defaultFormat`/`format` and `defaultMsgtype`/`msgtype` fields can also accept Jinja2 templates which will be evaluated using the the JSON data sent from your app when the webhook is called.
+This can be useful if you want to vary the values of these fields depending on the state of the app, but the app doesn't allow you to add custom fields to its JSON.
+For example, Grafana Alerts have the states "alerting" and "ok" among others. Imagine you want to receive a ping when an alert is going off, but only quiet notifications otherwise.
+Although Grafana doesn't allow us to customize its JSON, we can do this by setting `"defaultMsgtype":"{% if state == 'alerting' %}text{% else %}notice{% endif %}"` in our profile.
 
 ### Profile Setup Using the JSON API (advanced)
 
