@@ -151,6 +151,7 @@ def receive(whid: str, post: dict = Body(...)):
         "format": webhook.defaultFormat if post.get('format') is None else post.get('format'),
         "displayName": webhook.displayName,
         "avatar_url": webhook.avatar,
+        "avatarUrl": webhook.avatar,
         "emoji": webhook.defaultEmoji if post.get('emoji') is None else post.get('emoji')
     }
     if webhook.defaultMsgtype != 'plain':
