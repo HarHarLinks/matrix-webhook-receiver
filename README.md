@@ -12,13 +12,17 @@ It can receive any (JSON) content, optionally reformat it nicely (customizable!)
 
 ![example screenshot](examples/github_screenshot.png)
 
+The above example is from this project's [official \[matrix\] room](https://matrix.to/#/#matrix-webhook-receiver:matrix.org) with `msgtype` set to `notice` in a dark mode element desktop client.
+
 # Installation
 
 ### Requirements
 
-- a server that is reachable over the internet (or at least your sending apps and your matrix server) 24/7 with open firewall, port forwarding, a fixed IP or dynamic DNS. It does not need to be your matrix server!
+- Permission to create webhooks using a [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge running on a matrix server. You may want to run your own. This is very easy if you use the excellent [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) playbook: just enable the appservice. Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend using this fork which I myself use: https://github.com/redoonetworks/matrix-appservice-webhooks.
 
-- use a reverse proxy like [nginx](https://nginx.com) to enable HTTP basic auth. Use HTTPS (e.g. [Let's Encrypt](https://letsencrypt.org)) to secure your credentials and data from anyone listening in. This is especially relevant for the profile management endpoints `/set`, `/delete/*`, `/profiles`, `/profile/*`, since otherwise anyone can edit your settings and send spam using your receiver. Any other endpoints should not require authentication since not all apps support it - your `whid` acts as authentication to post messages. There is an [nginx example](examples/example.nginx.conf) for your convenience.
+- A server that is reachable over the internet (or at least your sending apps and your matrix server) 24/7 with open firewall, port forwarding, a fixed IP or dynamic DNS. It does not need to be your matrix server!
+
+- Use a reverse proxy like [nginx](https://nginx.com) to enable HTTP basic auth. Use HTTPS (e.g. [Let's Encrypt](https://letsencrypt.org)) to secure your credentials and data from anyone listening in. This is especially relevant for the profile management endpoints `/set`, `/delete/*`, `/profiles`, `/profile/*`, since otherwise anyone can edit your settings and send spam using your receiver. Any other endpoints should not require authentication since not all apps support it - your `whid` acts as authentication to post messages. There is an [nginx example](examples/example.nginx.conf) for your convenience.
 
 Set the environment variable `URL_PREFIX` if your reverse proxy is serving the app somewhere else than `/`, e.g. in the following case `URL_PREFIX="/webhooks"`.
 
@@ -33,6 +37,8 @@ Since this app is built with [FastAPI](https://fastapi.tiangolo.com), it also ho
 5. if your port 8000 is occupied, use `--port <number>`
 
 ### With Docker
+
+To begin, `git clone` this repo and `cd matrix-webhook-receiver`.
 
 ```shell
 docker build --tag matrix-webhook-receiver:latest .
@@ -92,7 +98,7 @@ Now you are ready to go! Grab your `whid`-URL and enter it into your app's webho
 
 No secret or authorization is required unless your setup exceeds the settings mentioned above.
 
-You may include the following fields in the JSON to override profile settings according to the [above explanation](#profile-setup), e.g. when `defaultMsgtype` is `notice`, set `"msgtype": "text"` to send this single message as a regular text message.
+You may include the following fields in the JSON to override profile settings according to the [above explanation](#profile-setup), e.g. when `defaultMsgtype` is `"notice"`, set `"msgtype": "text"` to send this single message as a regular text message.
 - `format`
 - `msgtype`
 - `emoji`
@@ -111,4 +117,18 @@ The same template is also used in the respective profile template. Fill it in an
 - GitLab (webhook):[Jinja2 template](examples/gitlab.jinja2), [profile template](examples/gitlab.json)
 - GitHub (webhook): [Jinja2 template](examples/github.jinja2), [profile template](examples/github.json)
 - Grafana Alerts (webhook): [Jinja2 template](examples/grafana.jinja2), [profile template](examples/grafana.json)
+- Prometheus Alertmanager https://prometheus.io/docs/alerting/latest/configuration/#webhook_config
+- Jellyfin (jellyfin-plugin-webhook with Generic Destination), don't forget to set the header `Content-Type: application/json`: [Jinja2 template](examples/jellyfin.jinja2), [profile template](examples/jellyfin.json)
+- Sonarr, Radarr
+- IFTTT
 - submit yours!
+
+## Tips & Tricks
+
+### Encryption?
+
+matrix-appservice-webhooks does not support sending your webhook messages encrypted at this time (everybody is looking forward to [end-to-bridge encrytion](https://www.youtube.com/watch?v=55P-NdDa-UI)!). However that does not mean you cannot receive webhook messages into your otherwise encrypted room: use an unencrypted client like [matrix.sh](https://github.com/fabianonline/matrix.sh) to create webhooks for encrypted rooms (i.e. to issue the `!webhook` command), then continue normally. Just keep in mind that the webhook messages are not encrypted, as the red shield icon will remind you in element.
+
+### Avatars!
+
+Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend using this fork which I myself use: https://github.com/redoonetworks/matrix-appservice-webhooks.
