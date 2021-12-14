@@ -42,9 +42,19 @@
             $('#displayName').val(result.displayName)
             $('#avatar').val(result.avatar)
             previewAvatar()
-            $('#defaultFormat').val(result.defaultFormat)
+            if (result.defaultFormat === 'plain' || result.defaultFormat === 'html') {
+                $('#defaultFormat').val(result.defaultFormat)
+            } else {
+                $('#defaultFormat').val('custom')
+                $('#customFormat').val(result.defaultFormat)
+            }
             $('#defaultFormat').change()
-            $('#defaultMsgtype').val(result.defaultMsgtype)
+            if (result.defaultMsgtype === 'text' || result.defaultMsgtype === 'notice' || result.defaultMsgtype === 'emote') {
+                $('#defaultMsgtype').val(result.defaultMsgtype)
+            } else {
+                $('#defaultMsgtype').val('custom')
+                $('#customMsgtype').val(result.defaultMsgtype)
+            }
             $('#defaultMsgtype').change()
             $('#defaultEmoji').prop('checked', result.defaultEmoji)
             $('#template').val(result.template)
@@ -70,6 +80,14 @@
             if (avatar == '') {
                 avatar = null
             }
+            var format = $('#defaultFormat').val()
+            if (format === 'custom') {
+                format = $('#customFormat').val()
+            }
+            var msgtype = $('#defaultMsgtype').val()
+            if (msgtype === 'custom') {
+                msgtype = $('#customMsgtype').val()
+            }
             var template = DOMPurify.sanitize($('#template').val(), {USE_PROFILES: {html: true}})
             if (template == '') {
                 template = null
@@ -80,8 +98,8 @@
                 token: $('#token').val(),
                 displayName: $('#displayName').val(),
                 avatar: avatar,
-                defaultFormat: $('#defaultFormat').val(),
-                defaultMsgtype: $('#defaultMsgtype').val(),
+                defaultFormat: format,
+                defaultMsgtype: msgtype,
                 defaultEmoji: $('#defaultEmoji').prop('checked'),
                 template: template
             }
@@ -171,12 +189,21 @@
             $('#avatar-preview').attr('src', '')
             $('#defaultFormat').val('plain')
             $('#defaultFormat').change()
+            $('#customFormat').val('')
             $('#defaultMsgtype').val('text')
             $('#defaultMsgtype').change()
+            $('#customMsgtype').val('')
             $('#defaultEmoji').prop('checked', true)
             $('#template').val('')
             $('#preview-area').html('(click "refresh HTML preview" to preview here)')
             $('#webhook-info').html('Load or save a profile to show the respective Webhook URL here.')
+        }
+        function combo(textinput, value) {
+            if (value === 'custom') {
+                textinput.css('display', 'inline-block')
+            } else {
+                textinput.css('display', 'none')
+            }
         }
         $(document).ready(function(){
             clearProfile()
@@ -287,6 +314,9 @@
             width: stretch;
             width: -webkit-fill-available;
             width: -moz-available;
+        }
+        #customFormat,#customMsgtype {
+            display: none;
         }
         #update-preview {
             width: auto;
@@ -415,10 +445,12 @@
                                 <label for="defaultFormat">defaultFormat</label>:
                             </div>
                             <div class="cell right">
-                                <select id="defaultFormat" name="defaultFormat">
+                                <select id="defaultFormat" name="defaultFormat" onChange="combo($('#customFormat'), $('#defaultFormat').val())">
                                     <option value="plain" selected>Plain Text</option>
                                     <option value="html">HTML</option>
+                                    <option value="custom">Custom Jinja2 template</option>
                                 </select>
+                                <input id="customFormat" name="customFormat" type="text">
                             </div>
                         </div>
                         <div class="row">
@@ -426,11 +458,13 @@
                                 <label for="defaultMsgtype">defaultMsgtype</label>:
                             </div>
                             <div class="cell right">
-                                <select id="defaultMsgtype" name="defaultMsgtype">
+                                <select id="defaultMsgtype" name="defaultMsgtype" onChange="combo($('#customMsgtype'), $('#defaultMsgtype').val())">
                                     <option value="text" selected>Normal</option>
                                     <option value="notice">Notice</option>
                                     <option value="emote">Emote</option>
+                                    <option value="custom">Custom Jinja2 template</option>
                                 </select>
+                                <input id="customMsgtype" name="customMsgtype" type="text">
                             </div>
                         </div>
                         <div class="row">
