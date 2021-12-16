@@ -18,7 +18,7 @@ The above example is from this project's [official \[matrix\] room](https://matr
 
 ### Requirements
 
-- Permission to create webhooks using a [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge running on a matrix server. You may want to run your own. This is very easy if you use the excellent [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) playbook: just enable the appservice. Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend using this fork which I myself use: https://github.com/redoonetworks/matrix-appservice-webhooks.
+- Permission to create webhooks using a [matrix-appservice-webhooks](https://github.com/turt2live/matrix-appservice-webhooks) bridge running on a matrix server. You may want to run your own. This is very easy if you use the excellent [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) playbook: just enable the appservice. Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend the fork [redoonetworks/matrix-appservice-webhooks](https://github.com/redoonetworks/matrix-appservice-webhooks) which I also use myself because let's face it: avatars are nice.
 
 - A server that is reachable over the internet (or at least your sending apps and your matrix server) 24/7 with open firewall, port forwarding, a fixed IP or dynamic DNS. It does not need to be your matrix server!
 
