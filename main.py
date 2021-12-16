@@ -135,29 +135,41 @@ def receive(whid: str, post: dict = Body(...)):
     if webhook is None:
         return Response(status_code=404)
 
+    env = Environment(undefined=DebugUndefined, extensions=jinja2_extensions)
+
     if webhook.template is None or webhook.template == '':
         payload = f"<pre><code>{json.dumps(post, sort_keys=False, indent=4)}\n</code></pre>\n"
         post['format'] = 'html'
     else:
-        env = Environment(undefined=DebugUndefined, extensions=jinja2_extensions)
         template = env.from_string(webhook.template)
         payload = template.render(post)
 
     if len(payload) == 0:
         return Response(status_code=400)
 
+    format = webhook.defaultFormat if post.get('format') is None else post.get('format')
+    if format not in ('plain', 'html'):
+        template = env.from_string(format)
+        format = template.render(post)
+
+    if webhook.defaultMsgtype != 'plain':
+        msgtype = webhook.defaultMsgtype
+    if post.get('msgtype') is not None:
+        msgtype = post.get('msgtype')
+    if msgtype is not None and msgtype not in ('text', 'notice', 'emote'):
+        template = env.from_string(msgtype)
+        msgtype = template.render(post)
+
     data = {
         "text": payload,
-        "format": webhook.defaultFormat if post.get('format') is None else post.get('format'),
+        "format": format,
         "displayName": webhook.displayName,
         "avatar_url": webhook.avatar,
         "avatarUrl": webhook.avatar,
         "emoji": webhook.defaultEmoji if post.get('emoji') is None else post.get('emoji')
     }
-    if webhook.defaultMsgtype != 'plain':
-        data['msgtype'] = webhook.defaultMsgtype
-    if post.get('msgtype') is not None:
-        data['msgtype'] = post.get('msgtype')
+    if msgtype is not None:
+        data['msgtype'] = msgtype
 
     response = requests.post(webhook.url + webhook.token, json=data)
     return response.json()

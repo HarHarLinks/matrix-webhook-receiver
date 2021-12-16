@@ -42,12 +42,22 @@
             $('#displayName').val(result.displayName)
             $('#avatar').val(result.avatar)
             previewAvatar()
-            $('#defaultFormat').val(result.defaultFormat)
+            if (result.defaultFormat === 'plain' || result.defaultFormat === 'html') {
+                $('#defaultFormat').val(result.defaultFormat)
+            } else {
+                $('#defaultFormat').val('custom')
+                $('#customFormat').val(result.defaultFormat).trigger('input')
+            }
             $('#defaultFormat').change()
-            $('#defaultMsgtype').val(result.defaultMsgtype)
+            if (result.defaultMsgtype === 'text' || result.defaultMsgtype === 'notice' || result.defaultMsgtype === 'emote') {
+                $('#defaultMsgtype').val(result.defaultMsgtype)
+            } else {
+                $('#defaultMsgtype').val('custom')
+                $('#customMsgtype').val(result.defaultMsgtype).trigger('input')
+            }
             $('#defaultMsgtype').change()
             $('#defaultEmoji').prop('checked', result.defaultEmoji)
-            $('#template').val(result.template)
+            $('#template').val(result.template).trigger('input')
             if (result.template != '' && result.template != null) {
                 previewTemplate()
             }
@@ -70,6 +80,14 @@
             if (avatar == '') {
                 avatar = null
             }
+            var format = $('#defaultFormat').val()
+            if (format === 'custom') {
+                format = $('#customFormat').val()
+            }
+            var msgtype = $('#defaultMsgtype').val()
+            if (msgtype === 'custom') {
+                msgtype = $('#customMsgtype').val()
+            }
             var template = DOMPurify.sanitize($('#template').val(), {USE_PROFILES: {html: true}})
             if (template == '') {
                 template = null
@@ -80,8 +98,8 @@
                 token: $('#token').val(),
                 displayName: $('#displayName').val(),
                 avatar: avatar,
-                defaultFormat: $('#defaultFormat').val(),
-                defaultMsgtype: $('#defaultMsgtype').val(),
+                defaultFormat: format,
+                defaultMsgtype: msgtype,
                 defaultEmoji: $('#defaultEmoji').prop('checked'),
                 template: template
             }
@@ -171,12 +189,26 @@
             $('#avatar-preview').attr('src', '')
             $('#defaultFormat').val('plain')
             $('#defaultFormat').change()
+            $('#customFormat').val('').trigger('input')
             $('#defaultMsgtype').val('text')
             $('#defaultMsgtype').change()
+            $('#customMsgtype').val('').trigger('input')
             $('#defaultEmoji').prop('checked', true)
-            $('#template').val('')
+            $('#template').val('').trigger('input')
             $('#preview-area').html('(click "refresh HTML preview" to preview here)')
             $('#webhook-info').html('Load or save a profile to show the respective Webhook URL here.')
+        }
+        function combo(textinput, value) {
+            if (value === 'custom') {
+                textinput.css('display', 'inline-block')
+                autoGrow(textinput)
+            } else {
+                textinput.css('display', 'none')
+            }
+        }
+        function autoGrow(element) {
+            element.css('height', 'auto')
+            element.css('height', (element.prop('scrollHeight'))+'px')
         }
         $(document).ready(function(){
             clearProfile()
@@ -288,6 +320,14 @@
             width: -webkit-fill-available;
             width: -moz-available;
         }
+        #customFormat,#customMsgtype {
+            display: none;
+        }
+        textarea {
+            width: calc(100% - 6px);
+            resize: vertical;
+            overflow: hidden;
+        }
         #update-preview {
             width: auto;
             margin-left: 10px;
@@ -301,10 +341,7 @@
             align-self: flex-end;
         }
         #template {
-            max-width: 100%;
-            width: calc(100% - 6px);
             min-height: 10em;
-            height: fit-content;
         }
         #template-row .cell {
             width: inherit;
@@ -415,10 +452,12 @@
                                 <label for="defaultFormat">defaultFormat</label>:
                             </div>
                             <div class="cell right">
-                                <select id="defaultFormat" name="defaultFormat">
+                                <select id="defaultFormat" name="defaultFormat" onChange="combo($('#customFormat'), $('#defaultFormat').val())">
                                     <option value="plain" selected>Plain Text</option>
                                     <option value="html">HTML</option>
+                                    <option value="custom">Custom Jinja2 template</option>
                                 </select>
+                                <textarea id="customFormat" name="customFormat" oninput="autoGrow($('#customFormat'))" style="height: auto;"></textarea>
                             </div>
                         </div>
                         <div class="row">
@@ -426,11 +465,13 @@
                                 <label for="defaultMsgtype">defaultMsgtype</label>:
                             </div>
                             <div class="cell right">
-                                <select id="defaultMsgtype" name="defaultMsgtype">
+                                <select id="defaultMsgtype" name="defaultMsgtype" onChange="combo($('#customMsgtype'), $('#defaultMsgtype').val())">
                                     <option value="text" selected>Normal</option>
                                     <option value="notice">Notice</option>
                                     <option value="emote">Emote</option>
+                                    <option value="custom">Custom Jinja2 template</option>
                                 </select>
+                                <textarea id="customMsgtype" name="customMsgtype" oninput="autoGrow($('#customMsgtype'))" style="height: auto;"></textarea>
                             </div>
                         </div>
                         <div class="row">
@@ -445,7 +486,7 @@
                     <div class="row" id="template-row">
                         <div class="cell">
                             <label for="template">template</label>:<br>
-                            <textarea id="template" name="template"></textarea>
+                            <textarea id="template" name="template" oninput="autoGrow($('#template'))" style="height: auto;"></textarea>
                             <div id="preview-container">
                                 <input id="preview" type="button" value="refresh HTML preview" onclick="previewTemplate()">
                                 <span>The template HTML gets cleaned with <a href="https://github.com/cure53/DOMPurify">DOMPurify</a>.</span>
