@@ -3,8 +3,8 @@
     "url": "https://matrix.example.org/appservice-webhooks/api/v1/matrix/hook/",
     "displayName": "GitLab",
     "avatar": "https://i.gyazo.com/thumb/1000/566debcae9702858a0ae487543e58123-png.png",
-    "template": "<strong><a href=\"{{ repository.homepage }}\">{{ repository.name }}</a></strong><br>received a {{ event_name }} event from {{ user_name }}<br>{% if event_name == \"push\" %}updates on {{ ref }}:<br><ul>{% for c in commits %}<li>{{ c.author.name }}: {{ c.title }}</li>{% endfor %}</ul>{% endif %}",
+    "template": "{% if object_kind in ['push', 'build'] %}{% if event_name is defined and event_name == 'push' %}[<strong><a href=\"{{ repository.homepage }}\">{{ project.path_with_namespace }}</a></strong>]<br>{{ user_name }} pushed <code>{{ checkout_sha[:7] }}</code> to {% if 'refs/heads/' in ref %}branch <a href=\"{{ repository.homepage }}/-/tree/{{ ref|replace('refs/heads/', '') }}\"><strong>{{ ref|replace('refs/heads/', '') }}</strong></a>{% else %}{{ ref }}{% endif %}<br>{% if commits %}commits:<br><ul>{% for c in commits %}<li>{{ c.author.name }}: {{ c.title }}</li>{% endfor %}</ul>{% endif %}{% elif object_kind == 'build' %}[<strong><a href=\"{{ repository.homepage }}\">{{ project_name }}</a></strong>]<br>CI build <font color=\"{% if build_status == 'success' %}#00ff00{% elif build_status == 'failed' %}red{% else %}white{% endif %}\">{{ build_status }}</font> <strong><a href=\"{{ repository.homepage }}/-/jobs/{{ build_id }}\">#{{ build_id }}</a></strong><br>ref <em>{{ ref }}</em> (HEAD commit <code>{{ commit.sha[:7] }}</code> \"<em>{{ commit.message }}</em>\")<br>using configuration <em>{{ build_name }}</em>{% if runner %} on runner <em>{{ runner.description }}</em>{% endif %}<br>{% endif %}{% endif %}",
     "defaultFormat": "html",
     "defaultEmoji": false,
-    "defaultMsgtype": "notice"
+    "defaultMsgtype": "{% if build_status is defined and build_status == 'failed' %}plain{% else %}notice{% endif %}"
 }
