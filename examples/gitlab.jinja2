@@ -13,7 +13,7 @@ commits:<br>
 {% elif object_kind == 'build' %}
 [<strong><a href="{{ repository.homepage }}">{{ project_name }}</a></strong>]<br>
 CI build <font color="{% if build_status == 'success' %}#00ff00{% elif build_status == 'failed' %}red{% else %}white{% endif %}">{{ build_status }}</font> <strong><a href="{{ repository.homepage }}/-/jobs/{{ build_id }}">#{{ build_id }}</a></strong><br>
-ref <em>{{ ref }}</em> (HEAD commit <code>{{ commit.sha[:7] }}</code> "<em>{{ commit.message }}</em>")<br>
+ref <em>{{ ref }}</em> (HEAD commit <code>{{ commit.sha[:7] }}</code> "<em>{{ commit.message|trim }}</em>")<br>
 using configuration <em>{{ build_name }}</em>{% if runner %} on runner <em>{{ runner.description }}</em>{% endif %}<br>
 {% endif %}
 {% endif %}
