@@ -141,3 +141,7 @@ matrix-appservice-webhooks does not support sending your webhook messages encryp
 ### Avatars!
 
 Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend using this fork which I myself use: https://github.com/redoonetworks/matrix-appservice-webhooks.
+
+### Noisy Notifications
+
+If you monitor something important using webhooks, you might want to receive "noisy notifications" about it when it fails. [Advanced Templating](#advanced-templating) of the `msgtype` allows you to toggle between `notice` (silent) and normal notifications. You go beyond that by including your "noisy keywords", such as your display name, username, `@room`, or any other custom defined keywords (check out your client's settings!) in a message (template). A `notice` will ignore the keyword and remain silent, but a `plain` message with a keyword will now be noisy.
