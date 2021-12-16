@@ -155,7 +155,7 @@ def receive(whid: str, post: dict = Body(...)):
     if len(payload) == 0:
         return Response(status_code=400)
 
-    format = webhook.defaultFormat if post.get('format') is None else post.get('format')
+    format = post.get('format') or webhook.defaultFormat
     if format not in ('plain', 'html'):
         template = env.from_string(format)
         format = template.render(post)
