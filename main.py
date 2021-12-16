@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import FastAPI, Response, Body, Request, Header
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, HttpUrl
+from urllib.parse import urlparse
 import hashlib
 import uuid
 import os
@@ -37,8 +38,8 @@ class CreateWebhook(BaseModel):
     token: str
     url: HttpUrl
     displayName: str
-    avatar: Optional[HttpUrl] = None
     template: Optional[str] = None
+    avatar: Optional[HttpUrl] = ''
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
     defaultMsgtype: Optional[str] = 'plain' # or notice or emote
@@ -110,6 +111,10 @@ def get_profiles(accept: Optional[str] = Header(None)):
     print(accept)
     if accept is not None and 'application/json' in accept:
         webhooks = session.query(Webhook)
+        for webhook in webhooks:
+            if urlparse(url=webhook.avatar).scheme not in ['http', 'https']:
+                print(f"not a url: {webhook.avatar}")
+                webhook.avatar = ''
         return list(webhooks)
     else:
         with open('profiles.html', 'r') as htmlpage:
@@ -118,6 +123,9 @@ def get_profiles(accept: Optional[str] = Header(None)):
 @app.get('/profile/{whid}')
 def get_profiles(whid: str):
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
+    if urlparse(url=webhook.avatar).scheme not in ['http', 'https']:
+        print(f"not a url: {webhook.avatar}")
+        webhook.avatar = ''
     return webhook
 
 @app.delete('/delete/{whid}', status_code=204)
@@ -152,6 +160,8 @@ def receive(whid: str, post: dict = Body(...)):
         template = env.from_string(format)
         format = template.render(post)
 
+    avatar = None if urlparse(url=webhook.avatar).scheme not in ['http', 'https'] else webhook.avatar
+
     if webhook.defaultMsgtype != 'plain':
         msgtype = webhook.defaultMsgtype
     if post.get('msgtype') is not None:
@@ -164,10 +174,11 @@ def receive(whid: str, post: dict = Body(...)):
         "text": payload,
         "format": format,
         "displayName": webhook.displayName,
-        "avatar_url": webhook.avatar,
-        "avatarUrl": webhook.avatar,
         "emoji": webhook.defaultEmoji if post.get('emoji') is None else post.get('emoji')
     }
+    if avatar is not None:
+        data['avatar_url'] = avatar
+        data['avatarUrl'] = avatar
     if msgtype is not None:
         data['msgtype'] = msgtype
 
