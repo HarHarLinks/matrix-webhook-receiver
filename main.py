@@ -146,7 +146,13 @@ def receive(whid: str, post: dict = Body(...)):
     env = Environment(undefined=DebugUndefined, extensions=jinja2_extensions)
 
     if webhook.template is None or webhook.template == '':
-        payload = f"<pre><code>{json.dumps(post, sort_keys=False, indent=4)}\n</code></pre>\n"
+        # sadly the bridge converts the first newline char
+        # right after the first opening curly brace
+        # into a <br> for some reason, which isn't great.
+        # when we prefix the message as we do here, instead
+        # the newline char before the code block is converted,
+        # working around the upstream bug
+        payload = f"raw message:\n<pre><code>{json.dumps(post, sort_keys=False, indent=4)}\n</code></pre>\n"
         post['format'] = 'html'
     else:
         template = env.from_string(webhook.template)
