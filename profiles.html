@@ -126,7 +126,12 @@
             })
         }
         function previewAvatar() {
-            $('#avatar-preview').attr('src', $('#avatar').val())
+            var avatar = $('#avatar').val()
+            if (avatar.startsWith('mxc://')) {
+                avatar = avatar.replace(new RegExp('mxc:\/\/(?<domain>[^/]*)\/(?<hash>.*)', 'i'), 'https://matrix.org/_matrix/media/r0/download/$<domain>/$<hash>')
+                console.log(avatar)
+            }
+            $('#avatar-preview').attr('src', avatar)
             $('#avatar-preview').css('visibility', 'visible')
         }
         function previewTemplate() {

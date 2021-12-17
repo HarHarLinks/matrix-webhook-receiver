@@ -8,7 +8,7 @@ import requests
 from typing import Optional
 from fastapi import FastAPI, Response, Body, Request, Header
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, stricturl
 from urllib.parse import urlparse
 import hashlib
 import uuid
@@ -39,7 +39,7 @@ class CreateWebhook(BaseModel):
     url: HttpUrl
     displayName: str
     template: Optional[str] = None
-    avatar: Optional[HttpUrl] = ''
+    avatar: Optional[stricturl(allowed_schemes={'http', 'https', 'mxc'})] = ''
     defaultFormat: Optional[str] = 'plain' # or html
     defaultEmoji: Optional[bool] = True
     defaultMsgtype: Optional[str] = 'plain' # or notice or emote
@@ -112,7 +112,7 @@ def get_profiles(accept: Optional[str] = Header(None)):
     if accept is not None and 'application/json' in accept:
         webhooks = session.query(Webhook)
         for webhook in webhooks:
-            if urlparse(url=webhook.avatar).scheme not in ['http', 'https']:
+            if urlparse(url=webhook.avatar).scheme not in ['http', 'https', 'mxc']:
                 print(f"not a url: {webhook.avatar}")
                 webhook.avatar = ''
         return list(webhooks)
@@ -123,7 +123,7 @@ def get_profiles(accept: Optional[str] = Header(None)):
 @app.get('/profile/{whid}')
 def get_profiles(whid: str):
     webhook = session.query(Webhook).filter_by(whid=whid).one_or_none()
-    if urlparse(url=webhook.avatar).scheme not in ['http', 'https']:
+    if urlparse(url=webhook.avatar).scheme not in ['http', 'https', 'mxc']:
         print(f"not a url: {webhook.avatar}")
         webhook.avatar = ''
     return webhook
@@ -160,7 +160,7 @@ def receive(whid: str, post: dict = Body(...)):
         template = env.from_string(format)
         format = template.render(post)
 
-    avatar = None if urlparse(url=webhook.avatar).scheme not in ['http', 'https'] else webhook.avatar
+    avatar = None if urlparse(url=webhook.avatar).scheme not in ['http', 'https', 'mxc'] else webhook.avatar
 
     if webhook.defaultMsgtype != 'plain':
         msgtype = webhook.defaultMsgtype
