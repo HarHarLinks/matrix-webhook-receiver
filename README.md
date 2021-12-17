@@ -126,10 +126,6 @@ The same template is also used in the respective profile template. Fill it in an
 - GitLab (webhook):[Jinja2 template](examples/gitlab.jinja2), [profile template](examples/gitlab.json)
 - GitHub (webhook): [Jinja2 template](examples/github.jinja2), [profile template](examples/github.json)
 - Grafana Alerts (webhook): [Jinja2 template](examples/grafana.jinja2), [profile template](examples/grafana.json)
-- Prometheus Alertmanager https://prometheus.io/docs/alerting/latest/configuration/#webhook_config
-- Jellyfin (jellyfin-plugin-webhook with Generic Destination), don't forget to set the header `Content-Type: application/json`: [Jinja2 template](examples/jellyfin.jinja2), [profile template](examples/jellyfin.json)
-- Sonarr, Radarr
-- IFTTT
 - submit yours!
 
 ## Tips & Tricks
