@@ -127,12 +127,15 @@
         }
         function previewAvatar() {
             var avatar = $('#avatar').val()
-            if (avatar.startsWith('mxc://')) {
+            if (avatar !== '') {
                 avatar = avatar.replace(new RegExp('mxc:\/\/(?<domain>[^/]*)\/(?<hash>.*)', 'i'), 'https://matrix.org/_matrix/media/r0/download/$<domain>/$<hash>')
-                console.log(avatar)
+                console.log('displaying avatar ' + avatar)
+                $('#avatar-preview').attr('src', avatar)
+                $('#avatar-preview').css('display', 'block')
+            } else {
+                $('#avatar-preview').attr('src', avatar)
+                $('#avatar-preview').css('display', 'none')
             }
-            $('#avatar-preview').attr('src', avatar)
-            $('#avatar-preview').css('visibility', 'visible')
         }
         function previewTemplate() {
             var dirty = $('#template').val()
@@ -343,7 +346,7 @@
             max-width: calc(100% - 20px);
             width: auto;
             max-height: 300px;
-            visibility: hidden;
+            display: none;
             margin: 10px;
             align-self: flex-end;
         }
