@@ -51,7 +51,7 @@ session = Session()
 app = FastAPI(
     title="matrix-webhook-receiver",
     description="Companion receiver to matrix-appservice-webhooks for matrix.",
-    version="1.1.0-rc.1",
+    version="1.1.0",
     contact={
         "name": "HarHarLinks",
         "url": "https://github.com/HarHarLinks/matrix-webhook-receiver"
