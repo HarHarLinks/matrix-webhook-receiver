@@ -6,7 +6,7 @@
 commits:<br>
 <ul>
 {% for c in commits %}
-<li>{{ c.author.name }}: {{ c.title }}</li>
+<li><a href="{{ repository.homepage }}/-/commit/{{ c.id }}"><code>{{ c.id[:7] }}</code></a> {{ c.author.name }}: {{ c.title }}</li>
 {% endfor %}
 </ul>
 {% endif %}
