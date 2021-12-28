@@ -148,6 +148,6 @@ If you monitor something important using webhooks, you might want to receive "no
 
 - https://github.com/turt2live/matrix-appservice-webhooks: Does the groundwork for this project.
 - https://github.com/redoonetworks/matrix-appservice-webhooks: Updated fork of the above.
+- https://github.com/Half-Shot/matrix-hookshot: A bridge between Matrix and multiple project management services, such as GitHub, GitLab, and JIRA, as well as generic webhooks.
 - https://github.com/immanuelfodor/matrix-encrypted-webhooks: Will forward any POST data it receives to [matrix].
-- https://github.com/Half-Shot/matrix-hookshot: A bridge between Matrix and multiple project management services, such as GitHub, GitLab and JIRA.
-- https://github.com/matrix-org/go-neb#github: A bot that supports a github plugin which can receive webhooks.
+- https://github.com/matrix-org/go-neb#github: A bot that supports a GitHub plugin which can receive webhooks.
