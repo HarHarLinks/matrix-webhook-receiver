@@ -61,7 +61,7 @@ Choose an existing profile from the list at the top or create a new one. Don't f
 
 - `displayName` can be freely chosen and will appear as the account posting your message to [matrix].
 
-- `avatar` (optional, default: `None`) is supposed to set the avatar of said account (HTTP(S) URL to an image), but is currently [broken upstream](https://github.com/turt2live/matrix-appservice-webhooks/issues/72).
+- `avatar` (optional, default: `None`) is supposed to set the avatar of said account (HTTP(S) or MXC URL to an image), but is currently [broken upstream](https://github.com/turt2live/matrix-appservice-webhooks/issues/72).
 
 - `defaultFormat` (optional, default: `plain`) sets the default value for `format` (`plain` or `html`), see [upstream README](https://github.com/turt2live/matrix-appservice-webhooks). You may also set a Jinja2 template that generates one of these values, [see below](#advanced-templating).
 
@@ -137,6 +137,8 @@ matrix-appservice-webhooks does not support sending your webhook messages encryp
 ### Avatars!
 
 Since the upstream bridge is currently partly broken in that it does not support you to set avatars for your webhooks, I can recommend using this fork which I myself use: https://github.com/redoonetworks/matrix-appservice-webhooks.
+
+It seems that the bridge will reupload the avatar even though it has not changed. You can circumvent this by using an MXC URL. You can get it by inspecting the event source of a "Webhook changed their display name" event or other image events in your [matrix] client.
 
 ### Noisy Notifications
 
