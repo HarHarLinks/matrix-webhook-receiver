@@ -150,4 +150,5 @@ If you monitor something important using webhooks, you might want to receive "no
 - https://github.com/redoonetworks/matrix-appservice-webhooks: Updated fork of the above.
 - https://github.com/Half-Shot/matrix-hookshot: A bridge between Matrix and multiple project management services, such as GitHub, GitLab, and JIRA, as well as generic webhooks.
 - https://github.com/immanuelfodor/matrix-encrypted-webhooks: Will forward any POST data it receives to [matrix].
+- https://github.com/Jaedotmoe/gh-bot: "Maybe the worst (but simplest) Matrix webhook bot for Github", GitLab and Gitea
 - https://github.com/matrix-org/go-neb#github: A bot that supports a GitHub plugin which can receive webhooks.
