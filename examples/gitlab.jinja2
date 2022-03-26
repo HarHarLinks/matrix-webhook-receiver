@@ -5,9 +5,12 @@
 {% if commits %}
 commits:<br>
 <ul>
-{% for c in commits %}
+{% for c in (commits|sort(reverse=true, attribute='timestamp'))[:18] %}
 <li><a href="{{ repository.homepage }}/-/commit/{{ c.id }}"><code>{{ c.id[:7] }}</code></a> {{ c.author.name }}: {{ c.title }}</li>
 {% endfor %}
+{% if (commits|length) is ge 20 %}
+<li><a href="{{ repository.homepage }}/-/commits{% if 'refs/heads/' in ref %}/{{ ref|replace('refs/heads/', '') }}{% endif %}">view more commits on GitLab</a></li>
+{% endif %}
 </ul>
 {% endif %}
 {% elif object_kind == 'build' %}
@@ -16,4 +19,12 @@ CI build <font color="{% if build_status == 'success' %}#00ff00{% elif build_sta
 ref <em>{{ ref }}</em> (HEAD commit <code>{{ commit.sha[:7] }}</code> "<em>{{ commit.message|trim }}</em>")<br>
 using configuration <em>{{ build_name }}</em>{% if runner %} on runner <em>{{ runner.description }}</em>{% endif %}<br>
 {% endif %}
-{% endif %}
+{% elif object_kind == 'pipeline' %}[<strong><a href="{{ project.web_url }}">{{ project.path_with_namespace }}</a></strong>]<br>
+CI pipeline <font color="{% if object_attributes.status == 'success' %}#00ff00{% elif object_attributes.status == 'failed' %}red{% else %}white{% endif %}">{{ object_attributes.detailed_status }}</font> <strong><a href="{{ project.web_url }}/-/pipelines/{{ object_attributes.id }}">#{{ object_attributes.id }}</a></strong> ref <em>{{ object_attributes.ref }}</em> (commit <a href="{{ project.web_url }}/-/commit/{{ commit.id }}"><code>{{ commit.id[:7] }}</code></a> "<em>{{ commit.message|trim }}</em>")<br>
+{% if builds %}
+<ol>
+{% for build in builds %}
+<li><a href="{{ project.web_url }}/-/jobs/{{ build.id }}">#{{ build.id }}</a> <em>{{ build.name }}</em>{% if build.runner is sameas true %} on runner <em>{{ build.runner.description }}</em>{% endif %}</li>
+{% endfor %}
+</ol>
+{% endif %}{% endif %}
